@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  background: black;
+  color: white;
+}
+
+#missionBox {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.7);
+  padding: 10px;
+}

@@ -1,0 +1,2801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lost in Random — 8 Quantum Worlds</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --qb:#00d4ff;--qp:#7b2fff;--qg:#f5c518;
+  --qdark:#04040f;--qvoid:#080818;--qdeep:#0a0a22;
+  --hr:#c0392b;--dp:#ff6eb4;--qc:#00fff2;--mg:#ffc107;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{font-family:'Raleway',sans-serif;background:var(--qdark);color:#fff;overflow-x:hidden;cursor:none;min-height:100vh;}
+
+/* CURSOR */
+#cur{width:8px;height:8px;background:var(--qb);border-radius:50%;position:fixed;z-index:9999;pointer-events:none;box-shadow:0 0 10px var(--qb),0 0 20px var(--qb);mix-blend-mode:screen;transition:background .3s,box-shadow .3s;transform:translate(-50%,-50%);}
+#cr{width:32px;height:32px;border:1.5px solid rgba(0,212,255,.5);border-radius:50%;position:fixed;z-index:9998;pointer-events:none;transform:translate(-50%,-50%);transition:width .18s,height .18s,border-color .3s;}
+.screen{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:1;overflow:hidden;}
+.screen.active{display:flex;}
+#bgc{position:fixed;inset:0;pointer-events:none;z-index:0;}
+
+/* ══════════ AUTH ══════════ */
+#s-auth{background:radial-gradient(ellipse 80% 60% at 50% 50%,rgba(123,47,255,.18) 0%,transparent 65%),linear-gradient(180deg,#04040f,#080818);}
+.ao{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:orbF 10s ease-in-out infinite;}
+.ao1{width:360px;height:360px;background:rgba(123,47,255,.12);top:-100px;left:-90px;}
+.ao2{width:260px;height:260px;background:rgba(0,212,255,.08);bottom:-70px;right:-70px;animation-delay:-4s;}
+@keyframes orbF{0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
+.auth-card{background:rgba(10,10,28,.85);border:1px solid rgba(0,212,255,.2);border-radius:18px;
+  padding:30px 32px 24px;width:min(380px,92vw);backdrop-filter:blur(20px);
+  box-shadow:0 0 70px rgba(123,47,255,.12),0 20px 60px rgba(0,0,0,.6);position:relative;z-index:2;}
+.auth-logo{font-family:'Cinzel Decorative',serif;font-size:clamp(1.1rem,3.5vw,1.6rem);font-weight:900;
+  background:linear-gradient(135deg,#fff,var(--qb),var(--qp));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-align:center;margin-bottom:4px;}
+.auth-sub{text-align:center;font-size:.52rem;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.22);margin-bottom:20px;}
+.auth-tabs{display:flex;margin-bottom:18px;border:1px solid rgba(255,255,255,.09);border-radius:7px;overflow:hidden;}
+.auth-tab{flex:1;padding:9px;font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);background:transparent;border:none;cursor:none;transition:all .2s;}
+.auth-tab.active{background:rgba(0,212,255,.13);color:var(--qb);}
+.auth-field{margin-bottom:12px;}
+.auth-field label{display:block;font-size:.5rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:5px;}
+.auth-inp{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:11px 12px;color:#fff;font-family:'Raleway',sans-serif;font-size:.85rem;outline:none;transition:border .2s;}
+.auth-inp:focus{border-color:rgba(0,212,255,.45);}
+.auth-inp::placeholder{color:rgba(255,255,255,.16);}
+.auth-btn{width:100%;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:4px;text-transform:uppercase;color:#000;background:linear-gradient(135deg,var(--qb),var(--qp));border:none;border-radius:6px;padding:12px;cursor:none;margin-top:4px;position:relative;overflow:hidden;transition:transform .2s;font-weight:700;}
+.auth-btn:hover{transform:translateY(-2px);}
+.auth-btn::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);animation:shim 2.5s infinite;}
+@keyframes shim{to{left:160%;}}
+.auth-msg{text-align:center;font-size:.64rem;margin-top:8px;min-height:16px;}
+.auth-msg.ok{color:#39ff14;}.auth-msg.err{color:#ff4757;}
+.auth-saved{text-align:center;font-size:.5rem;letter-spacing:2px;text-transform:uppercase;color:rgba(57,255,20,.5);margin-top:6px;display:none;}
+.auth-guest{display:block;text-align:center;font-size:.54rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.2);margin-top:10px;cursor:none;transition:color .2s;padding:7px;}
+.auth-guest:hover{color:rgba(255,255,255,.45);}
+
+/* ══════════ HERO ══════════ */
+#sh{background:radial-gradient(ellipse 100% 55% at 50% 100%,rgba(123,47,255,.2) 0%,transparent 60%),linear-gradient(180deg,#02020c,#06061a 60%,#02020c);justify-content:flex-start;padding:0;}
+.gbg{position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,.026) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.026) 1px,transparent 1px);background-size:55px 55px;pointer-events:none;}
+.horb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;animation:orbF 11s ease-in-out infinite;}
+.ho1{width:460px;height:460px;background:rgba(123,47,255,.09);bottom:-140px;left:-140px;}
+.ho2{width:320px;height:320px;background:rgba(0,212,255,.06);top:-70px;right:-70px;animation-delay:-4s;}
+.htopbar{position:relative;z-index:10;width:100%;display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(0,0,0,.32);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.05);}
+.htb-l{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:3px;color:rgba(255,255,255,.3);text-transform:uppercase;}
+.htb-r{display:flex;gap:6px;}
+.hbtn2{font-family:'Cinzel',serif;font-size:.48rem;letter-spacing:2px;text-transform:uppercase;padding:6px 12px;border-radius:5px;cursor:none;border:1px solid;transition:all .2s;}
+.hbtn2-b{border-color:rgba(0,212,255,.3);color:var(--qb);background:rgba(0,212,255,.07);}
+.hbtn2-b:hover{background:rgba(0,212,255,.18);}
+.hbtn2-g{border-color:rgba(245,197,24,.3);color:var(--qg);background:rgba(245,197,24,.07);}
+.hbtn2-g:hover{background:rgba(245,197,24,.18);}
+.hero-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 20px 14px;position:relative;z-index:2;width:100%;}
+.qart{position:relative;width:95px;height:95px;margin-bottom:8px;flex-shrink:0;}
+.qring{position:absolute;border-radius:50%;border:1px solid;top:50%;left:50%;animation:sp linear infinite;}
+.qr1{width:100%;height:100%;margin:-50% 0 0 -50%;border-color:rgba(0,212,255,.2);animation-duration:14s;border-style:dashed;}
+.qr2{width:68%;height:68%;margin:-34% 0 0 -34%;border-color:rgba(123,47,255,.16);animation-duration:9s;animation-direction:reverse;}
+.qr3{width:40%;height:40%;margin:-20% 0 0 -20%;border-color:rgba(245,197,24,.2);animation-duration:5s;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.qdot{position:absolute;width:6px;height:6px;border-radius:50%;top:-3px;left:50%;margin-left:-3px;}
+.qcore{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;}
+.qcore svg{animation:hP 3s ease-in-out infinite;filter:drop-shadow(0 0 10px rgba(0,212,255,.7));}
+@keyframes hP{0%,100%{filter:drop-shadow(0 0 8px rgba(0,212,255,.5));}50%{filter:drop-shadow(0 0 20px rgba(0,212,255,.9));}}
+.hero-ttl{text-align:center;margin-bottom:8px;}
+.hero-eye{font-size:8px;letter-spacing:7px;text-transform:uppercase;color:var(--qb);opacity:.6;margin-bottom:5px;}
+.hero-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.6rem,5vw,3.5rem);font-weight:900;line-height:.92;background:linear-gradient(135deg,#fff 0%,var(--qb) 45%,var(--qp) 80%,#fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-family:'Cinzel',serif;font-size:clamp(.46rem,1.1vw,.62rem);letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,.26);margin-top:5px;}
+.worlds-teaser{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap;justify-content:center;max-width:520px;}
+.wt{display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 7px;border-radius:6px;border:1px solid;font-family:'Cinzel',serif;font-size:.36rem;letter-spacing:2px;text-transform:uppercase;transition:transform .2s;cursor:none;min-width:38px;}
+.wt:hover{transform:translateY(-2px);}
+.wti{font-size:.72rem;line-height:1;}
+.wt1{border-color:rgba(192,57,43,.35);background:rgba(192,57,43,.08);color:rgba(231,76,60,.7);}
+.wt2{border-color:rgba(0,212,255,.3);background:rgba(0,212,255,.07);color:rgba(0,212,255,.7);}
+.wt3{border-color:rgba(57,255,20,.25);background:rgba(57,255,20,.06);color:rgba(57,255,20,.6);}
+.wt4{border-color:rgba(255,110,180,.3);background:rgba(255,110,180,.07);color:rgba(255,110,180,.7);}
+.wt5{border-color:rgba(245,197,24,.3);background:rgba(245,197,24,.07);color:rgba(245,197,24,.7);}
+.wt6{border-color:rgba(255,147,0,.3);background:rgba(255,147,0,.07);color:rgba(255,147,0,.7);}
+.wt7{border-color:rgba(100,200,255,.28);background:rgba(100,200,255,.06);color:rgba(100,200,255,.7);}
+.wt8{border-color:rgba(200,100,255,.28);background:rgba(200,100,255,.06);color:rgba(200,100,255,.7);}
+.bstart{font-family:'Cinzel Decorative',serif;font-size:clamp(.68rem,1.8vw,.85rem);letter-spacing:4px;text-transform:uppercase;color:#000;background:linear-gradient(135deg,var(--qb),var(--qp));border:none;padding:13px clamp(22px,4vw,42px);border-radius:4px;cursor:none;box-shadow:0 0 28px rgba(0,212,255,.3);position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;font-weight:700;margin-top:14px;}
+.bstart:hover{transform:translateY(-3px);box-shadow:0 0 48px rgba(0,212,255,.5);}
+.bstart::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);animation:shim 2.8s infinite;}
+
+/* ══════════ LOADING ══════════ */
+#sl{background:var(--qvoid);}
+.lt{font-family:'Cinzel',serif;font-size:clamp(.8rem,2vw,1.3rem);letter-spacing:8px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:40px;}
+.qlw{position:relative;width:150px;height:150px;margin-bottom:32px;}
+.qlr{position:absolute;border-radius:50%;border:2px solid transparent;animation:sp linear infinite;top:50%;left:50%;}
+.qlr1{width:144px;height:144px;margin:-72px 0 0 -72px;border-top-color:var(--qb);animation-duration:2s;}
+.qlr2{width:108px;height:108px;margin:-54px 0 0 -54px;border-top-color:var(--qp);animation-duration:1.3s;animation-direction:reverse;}
+.qlr3{width:72px;height:72px;margin:-36px 0 0 -36px;border-bottom-color:var(--qg);animation-duration:.85s;}
+.qlc{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.6rem;animation:pc 1.6s ease-in-out infinite;}
+@keyframes pc{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(.85);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.1);}}
+.pw{width:min(280px,80vw);margin-bottom:14px;}
+.pt{display:flex;justify-content:space-between;font-size:.54rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.23);margin-bottom:6px;}
+.ptrack{height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;}
+.pfill{height:100%;background:linear-gradient(90deg,var(--qb),var(--qp));width:0%;box-shadow:0 0 8px var(--qb);}
+.lstatus{font-size:.56rem;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;min-height:14px;margin-bottom:22px;}
+.qbr{display:flex;gap:6px;}
+.qb2{width:26px;height:26px;border:1px solid rgba(0,212,255,.24);display:flex;align-items:center;justify-content:center;font-size:.56rem;font-family:'Cinzel',serif;color:rgba(0,212,255,.36);animation:qf 2.2s infinite;}
+.qb2:nth-child(2n){animation-delay:-.6s;}.qb2:nth-child(3n){animation-delay:-1.2s;}
+@keyframes qf{0%,88%,100%{color:rgba(0,212,255,.36);}94%{color:var(--qg);box-shadow:0 0 8px rgba(245,197,24,.4);}}
+
+/* ══════════ WORLD HUB ══════════ */
+#s-hub{background:var(--qdeep);justify-content:flex-start;padding:0;}
+.hub-top{width:100%;display:flex;justify-content:space-between;align-items:center;padding:11px 17px;background:rgba(0,0,0,.44);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:6px;}
+.hub-body{width:100%;overflow-y:auto;padding:18px 16px 55px;display:flex;flex-direction:column;align-items:center;}
+.hub-title{text-align:center;margin-bottom:16px;width:100%;}
+.hub-eye{font-size:.5rem;letter-spacing:6px;text-transform:uppercase;color:var(--qb);opacity:.6;margin-bottom:6px;}
+.hub-h{font-family:'Cinzel Decorative',serif;font-size:clamp(1.1rem,3.5vw,2rem);background:linear-gradient(135deg,#fff,var(--qb));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* Mini leaderboard */
+.mlb{width:100%;max-width:860px;margin-bottom:14px;background:rgba(0,0,0,.28);border:1px solid rgba(0,212,255,.1);border-radius:9px;padding:9px 15px;}
+.mlbt{font-family:'Cinzel',serif;font-size:.48rem;letter-spacing:4px;text-transform:uppercase;color:rgba(0,212,255,.55);margin-bottom:5px;}
+.mlbr{display:flex;gap:10px;flex-wrap:wrap;}
+.mlbrow{font-size:.58rem;color:rgba(255,255,255,.42);}
+.mlbrow strong{color:#fff;}
+
+/* Player HUD strip */
+.phud{display:flex;gap:clamp(5px,2vw,14px);margin-bottom:16px;background:rgba(255,255,255,.04);border:1px solid rgba(0,212,255,.11);border-radius:9px;padding:9px clamp(8px,1.8vw,16px);flex-wrap:wrap;justify-content:center;}
+.phi{display:flex;align-items:center;gap:5px;}
+.phv{font-family:'Cinzel',serif;font-size:.82rem;font-weight:700;}
+.phl{font-size:.46rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.26);}
+.phdiv{width:1px;background:rgba(255,255,255,.08);align-self:stretch;}
+.hrt{font-size:.86rem;animation:hb 1.6s ease-in-out infinite;display:inline-block;}
+.hrt.lost{filter:none;opacity:.16;animation:none;}
+@keyframes hb{0%,100%{transform:scale(1);}50%{transform:scale(1.18);}}
+
+/* 8 World Cards Grid */
+.worlds-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;width:100%;max-width:880px;}
+.wcard{position:relative;border-radius:14px;overflow:hidden;cursor:none;transition:transform .28s cubic-bezier(.2,.8,.3,1),box-shadow .28s;min-height:200px;display:flex;flex-direction:column;justify-content:flex-end;}
+.wcard:hover{transform:translateY(-6px) scale(1.02);}
+.wcbg{position:absolute;inset:0;z-index:0;}
+.wcico{position:absolute;font-size:clamp(55px,11vw,80px);top:10px;right:10px;opacity:.1;z-index:1;pointer-events:none;}
+.wcb{position:relative;z-index:2;padding:14px;background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.4) 55%,transparent 100%);}
+.wcbdg{display:inline-block;font-size:.44rem;letter-spacing:3px;text-transform:uppercase;color:#fff;padding:2px 7px;border-radius:30px;margin-bottom:5px;font-weight:700;}
+.wcname{font-family:'Cinzel Decorative',serif;font-size:clamp(.8rem,1.8vw,1rem);color:#fff;margin-bottom:4px;line-height:1.2;}
+.wcdesc{font-size:.6rem;color:rgba(255,255,255,.4);line-height:1.5;margin-bottom:9px;}
+.wcenter{width:100%;font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:3px;text-transform:uppercase;color:#fff;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);padding:8px;border-radius:4px;cursor:none;transition:all .2s;}
+.wcenter:hover{letter-spacing:5px;}
+
+/* World card themes */
+.wc1 .wcbg{background:radial-gradient(ellipse 80% 60% at 50% 80%,rgba(192,57,43,.3) 0%,transparent 55%),linear-gradient(180deg,#0d0505,#1a0808);}
+.wc1{border:1px solid rgba(192,57,43,.4);}.wc1:hover{box-shadow:0 14px 45px rgba(192,57,43,.3);}
+.wc1 .wcbdg{background:rgba(192,57,43,.85);}.wc1 .wcenter{background:linear-gradient(135deg,rgba(192,57,43,.82),rgba(100,20,10,.88));border-color:rgba(231,76,60,.4);}
+.wc2 .wcbg{background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(0,212,255,.12) 0%,transparent 65%),linear-gradient(135deg,#020810,#050f1e);}
+.wc2{border:1px solid rgba(0,212,255,.28);}.wc2:hover{box-shadow:0 14px 45px rgba(0,212,255,.25);}
+.wc2 .wcbdg{background:rgba(0,212,255,.75);color:#000;}.wc2 .wcenter{background:linear-gradient(135deg,rgba(0,212,255,.75),rgba(123,47,255,.75));border-color:rgba(0,212,255,.4);}
+.wc3 .wcbg{background:radial-gradient(ellipse 80% 55% at 50% 50%,rgba(57,255,20,.1) 0%,transparent 60%),linear-gradient(180deg,#010a01,#031403);}
+.wc3{border:1px solid rgba(57,255,20,.26);}.wc3:hover{box-shadow:0 14px 45px rgba(57,255,20,.22);}
+.wc3 .wcbdg{background:rgba(57,255,20,.7);color:#000;}.wc3 .wcenter{background:linear-gradient(135deg,rgba(57,255,20,.7),rgba(0,150,30,.7));border-color:rgba(57,255,20,.35);}
+.wc4 .wcbg{background:radial-gradient(ellipse 80% 55% at 50% 25%,rgba(255,110,180,.2) 0%,transparent 55%),linear-gradient(180deg,#07011f,#100828);}
+.wc4{border:1px solid rgba(255,110,180,.32);}.wc4:hover{box-shadow:0 14px 45px rgba(255,110,180,.26);}
+.wc4 .wcbdg{background:rgba(255,110,180,.75);}.wc4 .wcenter{background:linear-gradient(135deg,rgba(255,110,180,.75),rgba(79,195,247,.65));border-color:rgba(255,110,180,.4);}
+.wc5 .wcbg{background:radial-gradient(ellipse 80% 55% at 50% 30%,rgba(245,197,24,.12) 0%,transparent 55%),linear-gradient(180deg,#0a0800,#161000);}
+.wc5{border:1px solid rgba(245,197,24,.28);}.wc5:hover{box-shadow:0 14px 45px rgba(245,197,24,.22);}
+.wc5 .wcbdg{background:rgba(245,197,24,.8);color:#000;}.wc5 .wcenter{background:linear-gradient(135deg,rgba(245,197,24,.78),rgba(180,130,10,.78));border-color:rgba(245,197,24,.4);}
+.wc6 .wcbg{background:radial-gradient(ellipse 80% 55% at 50% 50%,rgba(255,147,0,.1) 0%,transparent 60%),linear-gradient(180deg,#0a0400,#180a00);}
+.wc6{border:1px solid rgba(255,147,0,.26);}.wc6:hover{box-shadow:0 14px 45px rgba(255,147,0,.22);}
+.wc6 .wcbdg{background:rgba(255,147,0,.75);color:#000;}.wc6 .wcenter{background:linear-gradient(135deg,rgba(255,147,0,.75),rgba(200,80,0,.75));border-color:rgba(255,147,0,.35);}
+.wc7 .wcbg{background:radial-gradient(ellipse 80% 55% at 50% 50%,rgba(100,200,255,.09) 0%,transparent 60%),linear-gradient(180deg,#000810,#001020);}
+.wc7{border:1px solid rgba(100,200,255,.22);}.wc7:hover{box-shadow:0 14px 45px rgba(100,200,255,.2);}
+.wc7 .wcbdg{background:rgba(100,200,255,.7);color:#000;}.wc7 .wcenter{background:linear-gradient(135deg,rgba(100,200,255,.72),rgba(50,150,220,.72));border-color:rgba(100,200,255,.32);}
+.wc8 .wcbg{background:radial-gradient(ellipse 80% 55% at 50% 50%,rgba(200,100,255,.1) 0%,transparent 60%),linear-gradient(180deg,#080010,#100020);}
+.wc8{border:1px solid rgba(200,100,255,.22);}.wc8:hover{box-shadow:0 14px 45px rgba(200,100,255,.2);}
+.wc8 .wcbdg{background:rgba(200,100,255,.7);}.wc8 .wcenter{background:linear-gradient(135deg,rgba(200,100,255,.72),rgba(120,50,200,.72));border-color:rgba(200,100,255,.3);}
+
+/* ══════════ GAME SCREENS ══════════ */
+.gscreen{justify-content:flex-start;background:var(--qdark);}
+/* Theme backgrounds */
+.bg-treasure{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(192,57,43,.15) 0%,transparent 50%),linear-gradient(180deg,#060102,#0d0505 50%,#040101);}
+.bg-maze{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(0,212,255,.13) 0%,transparent 50%),linear-gradient(180deg,#000810,#000a1a);}
+.bg-target{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(57,255,20,.1) 0%,transparent 50%),linear-gradient(180deg,#010801,#030f03);}
+.bg-memory{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(255,110,180,.15) 0%,transparent 50%),linear-gradient(180deg,#06001a,#05011a);}
+.bg-dice{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(245,197,24,.12) 0%,transparent 50%),linear-gradient(180deg,#080600,#0a0800);}
+.bg-survival{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(255,147,0,.1) 0%,transparent 50%),linear-gradient(180deg,#080400,#100800);}
+.bg-doors{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(100,200,255,.1) 0%,transparent 50%),linear-gradient(180deg,#000a12,#001018);}
+.bg-lab{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(200,100,255,.1) 0%,transparent 50%),linear-gradient(180deg,#060010,#0a0018);}
+
+/* Universal game topbar */
+.gtb{width:100%;display:flex;align-items:center;justify-content:space-between;padding:9px clamp(8px,2.5vw,20px);background:rgba(0,0,0,.52);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.07);flex-wrap:wrap;gap:6px;z-index:10;}
+.gtbt{font-family:'Cinzel Decorative',serif;font-size:clamp(.66rem,1.6vw,.95rem);}
+.gtbs{display:flex;gap:clamp(4px,1.2vw,10px);align-items:center;flex-wrap:wrap;}
+.gs2{display:flex;align-items:center;gap:3px;font-family:'Cinzel',serif;font-size:clamp(.56rem,1.3vw,.74rem);}
+.glb{font-size:.42rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.26);}
+.timerw{display:flex;align-items:center;gap:5px;}
+.timerd{font-family:'Cinzel',serif;font-size:clamp(.64rem,1.5vw,.84rem);font-weight:700;min-width:32px;text-align:center;}
+.t-ok{color:#39ff14;}.t-warn{color:var(--qg);animation:tpulse .8s ease-in-out infinite;}.t-crit{color:#ff4757;animation:tpulse .4s ease-in-out infinite;}
+@keyframes tpulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.timerbar{width:48px;height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
+.timerfill{height:100%;background:#39ff14;border-radius:2px;transition:width 1s linear,background .5s;}
+.topbtn{font-family:'Cinzel',serif;font-size:.46rem;letter-spacing:2px;text-transform:uppercase;padding:5px 9px;border-radius:4px;cursor:none;border:1px solid;transition:all .2s;}
+.bbk{font-family:'Cinzel',serif;font-size:.46rem;letter-spacing:2px;text-transform:uppercase;padding:5px 9px;border-radius:4px;cursor:none;border:1px solid rgba(255,255,255,.11);color:rgba(255,255,255,.35);background:rgba(255,255,255,.04);transition:all .2s;}
+.bbk:hover{color:#fff;}
+.gi{width:100%;flex:1;display:flex;flex-direction:column;align-items:center;padding:8px clamp(5px,2vw,18px) 14px;gap:7px;position:relative;z-index:2;}
+.linfo{text-align:center;}
+.lisub{font-family:'Cinzel',serif;font-size:.46rem;letter-spacing:5px;text-transform:uppercase;color:rgba(255,255,255,.26);margin-bottom:2px;}
+.litit{font-family:'Cinzel Decorative',serif;font-size:clamp(.86rem,2.5vw,1.3rem);}
+.lidesc{font-size:.58rem;color:rgba(255,255,255,.28);margin-top:2px;}
+
+/* Progress bar */
+.fb{width:min(340px,88vw);}
+.fbt{display:flex;justify-content:space-between;font-size:.46rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25);margin-bottom:4px;}
+.fbtrack{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;}
+.fbf{height:100%;border-radius:2px;width:0%;transition:width .4s ease;}
+
+/* ══════════ WORLD 1: TREASURE HUNT ══════════ */
+.tg{
+  display:grid;
+  gap:10px;
+  width:100%;
+  max-width:min(620px,96vw);
+  margin:14px auto 0;
+  justify-content:center;
+  align-content:center;
+}
+
+.tb{
+  aspect-ratio:1;
+  min-height:86px;
+  border-radius:16px;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  position:relative;
+  overflow:hidden;
+  transition:
+    transform .18s cubic-bezier(.2,.8,.3,1),
+    box-shadow .18s ease,
+    border-color .18s ease,
+    filter .18s ease;
+  animation:bI .32s ease both;
+  user-select:none;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    inset 0 -8px 18px rgba(0,0,0,.22),
+    0 8px 20px rgba(0,0,0,.22);
+}
+
+@keyframes bI{
+  from{opacity:0;transform:scale(.72) translateY(8px);}
+  to{opacity:1;transform:scale(1) translateY(0);}
+}
+
+.tb:hover:not(.rev){
+  transform:translateY(-4px) scale(1.05);
+  filter:brightness(1.06);
+}
+
+.tb:active:not(.rev){
+  transform:scale(.95);
+}
+
+.tb.rev{
+  cursor:default;
+  animation:none;
+}
+
+.tb::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255,255,255,.10), transparent 35%),
+    linear-gradient(135deg, rgba(255,255,255,.06) 0%, transparent 58%);
+  pointer-events:none;
+  z-index:1;
+}
+
+.tb-glyph{
+  font-family:'Cinzel',serif;
+  font-size:clamp(1rem,2.8vw,1.7rem);
+  color:rgba(255,255,255,.78);
+  font-weight:700;
+  line-height:1;
+  z-index:2;
+  text-shadow:0 0 10px rgba(255,255,255,.08);
+}
+
+.tb-label{
+  font-family:'Cinzel',serif;
+  font-size:clamp(.42rem,.95vw,.62rem);
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.38);
+  z-index:2;
+  font-weight:700;
+}
+
+.tb.wrong{
+  animation:shk .32s ease;
+}
+
+@keyframes shk{
+  0%,100%{transform:translateX(0);}
+  25%,75%{transform:translateX(-5px);}
+  50%{transform:translateX(5px);}
+}
+
+.tb.tf{
+  animation:none !important;
+}
+
+.diamond-found{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%;
+  position:absolute;
+  inset:0;
+  z-index:3;
+}
+
+.diamond-emoji{
+  font-size:clamp(1.9rem,5vw,3rem);
+  animation:
+    dPop .5s cubic-bezier(.18,.89,.32,1.28) both,
+    dFloat 2s ease-in-out .5s infinite;
+  filter:drop-shadow(0 0 12px rgba(255,255,255,.18));
+}
+
+@keyframes dPop{
+  0%{transform:scale(0);}
+  60%{transform:scale(1.4);}
+  100%{transform:scale(1.1);}
+}
+
+@keyframes dFloat{
+  0%,100%{transform:scale(1.1) translateY(0);}
+  50%{transform:scale(1.1) translateY(-2px);}
+}
+
+.diamond-txt{
+  font-family:'Cinzel',serif;
+  font-size:clamp(.44rem,.95vw,.66rem);
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+  margin-top:4px;
+  font-weight:700;
+}
+
+/* ===== Treasure block themes (INDEX16 style upgraded) ===== */
+
+/* WORLD 1 / HORROR — big premium red blocks */
+.bh{
+  background:
+    radial-gradient(circle at 25% 18%, rgba(255,90,90,.14), transparent 35%),
+    linear-gradient(145deg, #180404 0%, #240606 55%, #100202 100%);
+}
+.bh .tb-glyph{
+  color:rgba(231,76,60,.9);
+  font-size:clamp(1rem,2.8vw,1.7rem);
+}
+.bh .tb-label{
+  color:rgba(255,170,170,.42);
+}
+.bh:hover:not(.rev){
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    inset 0 -8px 18px rgba(0,0,0,.28),
+    0 0 16px rgba(231,76,60,.25),
+    0 12px 28px rgba(0,0,0,.32);
+}
+.bh.tf{
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,.12), transparent 35%),
+    linear-gradient(145deg, #380000 0%, #760000 100%);
+  border-color:rgba(231,76,60,.88);
+  box-shadow:
+    0 0 24px rgba(231,76,60,.65)
+    0 12px 28px rgba(0,0,0,.35);
+}
+
+/* QUANTUM */
+.bq{
+  background:
+    radial-gradient(circle at 28% 18%, rgba(0,255,242,.12), transparent 35%),
+    linear-gradient(145deg, #000b18 0%, #001320 55%, #00070f 100%);
+}
+.bq .tb-glyph{
+  color:rgba(0,212,255,.88);
+  font-size:clamp(1rem,2.8vw,1.7rem);
+}
+.bq .tb-label{
+  color:rgba(150,255,255,.35);
+}
+.bq:hover:not(.rev){
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    inset 0 -8px 18px rgba(0,0,0,.26),
+    0 0 16px rgba(0,212,255,.22),
+    0 12px 28px rgba(0,0,0,.32);
+}
+.bq.tf{
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,.08), transparent 35%),
+    linear-gradient(145deg, #001625 0%, rgba(0,212,255,.2) 100%);
+  border-color:rgba(0,212,255,.92);
+  box-shadow:
+    0 0 24px rgba(0,212,255,.68) 
+    0 12px 28px rgba(0,0,0,.35);
+}
+
+/* DISNEY */
+.bd{
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255,255,255,.08), transparent 35%),
+    linear-gradient(145deg, #3a1238 0%, #2a0d2a 55%, #180717 100%);
+}
+.bd .tb-glyph{color:rgba(255,110,180,.88);}
+.bd .tb-label{color:rgba(255,200,230,.35);}
+.bd:hover:not(.rev){
+  box-shadow:0 0 16px rgba(255,110,180,.22), 0 12px 28px rgba(0,0,0,.32);
+}
+.bd.tf{
+  background:linear-gradient(145deg, #4f1848 0%, #8a2e7b 100%);
+  border-color:rgba(255,110,180,.88);
+  box-shadow:0 0 24px rgba(255,110,180,.62) !important;
+}
+
+/* MYTHIC */
+.bm{
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255,193,7,.12), transparent 35%),
+    linear-gradient(145deg, #332303 0%, #241902 55%, #130d01 100%);
+}
+.bm .tb-glyph{color:rgba(255,210,80,.9);}
+.bm .tb-label{color:rgba(255,230,150,.35);}
+.bm:hover:not(.rev){
+  box-shadow:0 0 16px rgba(255,193,7,.22), 0 12px 28px rgba(0,0,0,.32);
+}
+.bm.tf{
+  background:linear-gradient(145deg, #4f3604 0%, #8a6208 100%);
+  border-color:rgba(255,193,7,.88);
+  box-shadow:0 0 24px rgba(255,193,7,.58) !important;
+}
+
+/* NEON */
+.bn{
+  background:
+    radial-gradient(circle at 28% 18%, rgba(57,255,20,.12), transparent 35%),
+    linear-gradient(145deg, #0b1d08 0%, #10270d 55%, #071106 100%);
+}
+.bn .tb-glyph{color:rgba(57,255,20,.9);}
+.bn .tb-label{color:rgba(180,255,170,.35);}
+.bn:hover:not(.rev){
+  box-shadow:0 0 16px rgba(57,255,20,.22), 0 12px 28px rgba(0,0,0,.32);
+}
+.bn.tf{
+  background:linear-gradient(145deg, #13320f 0%, #1e6d16 100%);
+  border-color:rgba(57,255,20,.88);
+  box-shadow:0 0 24px rgba(57,255,20,.58) !important;
+}
+
+/* COSMIC */
+.bco{
+  background:
+    radial-gradient(circle at 28% 18%, rgba(255,147,0,.12), transparent 35%),
+    linear-gradient(145deg, #261303 0%, #351b04 55%, #170b01 100%);
+}
+.bco .tb-glyph{color:rgba(255,147,0,.9);}
+.bco .tb-label{color:rgba(255,210,160,.35);}
+.bco:hover:not(.rev){
+  box-shadow:0 0 16px rgba(255,147,0,.22), 0 12px 28px rgba(0,0,0,.32);
+}
+.bco.tf{
+  background:linear-gradient(145deg, #4b2405 0%, #8a4208 100%);
+  border-color:rgba(255,147,0,.88);
+  box-shadow:0 0 24px rgba(255,147,0,.58) !important;
+}
+
+/* GLACIER */
+.bg2{
+  background:
+    radial-gradient(circle at 28% 18%, rgba(100,200,255,.12), transparent 35%),
+    linear-gradient(145deg, #071521 0%, #0d2334 55%, #040c12 100%);
+}
+.bg2 .tb-glyph{color:rgba(120,220,255,.9);}
+.bg2 .tb-label{color:rgba(190,235,255,.35);}
+.bg2:hover:not(.rev){
+  box-shadow:0 0 16px rgba(100,200,255,.22), 0 12px 28px rgba(0,0,0,.32);
+}
+.bg2.tf{
+  background:linear-gradient(145deg, #10324a 0%, #1f5f87 100%);
+  border-color:rgba(100,200,255,.88);
+  box-shadow:0 0 24px rgba(100,200,255,.58) !important;
+}
+
+/* ABYSS */
+.ba{
+  background:
+    radial-gradient(circle at 28% 18%, rgba(200,100,255,.12), transparent 35%),
+    linear-gradient(145deg, #1b0a28 0%, #27103b 55%, #11071a 100%);
+}
+.ba .tb-glyph{color:rgba(210,140,255,.9);}
+.ba .tb-label{color:rgba(230,190,255,.35);}
+.ba:hover:not(.rev){
+  box-shadow:0 0 16px rgba(200,100,255,.22), 0 12px 28px rgba(0,0,0,.32);
+}
+.ba.tf{
+  background:linear-gradient(145deg, #31124a 0%, #5e2290 100%);
+  border-color:rgba(200,100,255,.88);
+  box-shadow:0 0 24px rgba(200,100,255,.58) !important;
+}
+
+/* Hint glow */
+@keyframes hintPulse{
+  0%,100%{box-shadow:0 0 8px var(--hc);}
+  50%{box-shadow:0 0 22px var(--hc), 0 0 34px color-mix(in srgb, var(--hc) 45%, transparent);}
+}
+.hint-glow{
+  animation:hintPulse .9s ease-in-out 3;
+}
+
+/* Mobile */
+@media (max-width:768px){
+  .tg{
+    gap:8px;
+    max-width:min(520px,96vw);
+  }
+  .tb{
+    min-height:72px;
+    border-radius:14px;
+  }
+}
+
+@media (max-width:480px){
+  .tg{
+    gap:6px;
+    max-width:min(420px,96vw);
+  }
+  .tb{
+    min-height:60px;
+    border-radius:12px;
+  }
+  .tb-glyph{
+    font-size:clamp(.85rem,3vw,1.3rem);
+  }
+}
+/* ══════════ WORLD 2: QUANTUM MAZE ══════════ */
+.maze-wrap{position:relative;width:min(360px,84vw);aspect-ratio:1;border:2px solid rgba(0,212,255,.3);border-radius:8px;overflow:hidden;background:rgba(0,5,15,.8);}
+.maze-canvas{position:absolute;inset:0;width:100%;height:100%;}
+.maze-player{position:absolute;width:14%;height:14%;background:var(--qb);border-radius:50%;box-shadow:0 0 12px var(--qb);transition:top .15s,left .15s;z-index:5;display:flex;align-items:center;justify-content:center;font-size:.7rem;}
+.maze-exit{position:absolute;width:12%;height:12%;background:var(--qg);border-radius:4px;box-shadow:0 0 10px var(--qg);z-index:4;display:flex;align-items:center;justify-content:center;font-size:.65rem;animation:exitPulse 1.5s ease-in-out infinite;}
+@keyframes exitPulse{0%,100%{box-shadow:0 0 8px var(--qg);}50%{box-shadow:0 0 20px var(--qg);}}
+.maze-arrows{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:8px;}
+.maze-row{display:flex;gap:4px;}
+.maze-btn{width:40px;height:40px;border-radius:8px;border:1px solid rgba(0,212,255,.3);background:rgba(0,212,255,.08);color:var(--qb);font-size:1rem;cursor:none;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.maze-btn:hover{background:rgba(0,212,255,.2);transform:scale(1.08);}
+.maze-btn:active{transform:scale(.92);}
+.maze-quantum-info{font-size:.55rem;color:rgba(0,212,255,.4);font-family:'Cinzel',serif;letter-spacing:2px;text-align:center;margin-top:5px;}
+
+/* ══════════ WORLD 3: QUANTUM TARGET ══════════ */
+.target-arena{position:relative;width:min(360px,84vw);height:min(280px,65vw);background:rgba(0,8,0,.8);border:1px solid rgba(57,255,20,.2);border-radius:10px;overflow:hidden;}
+.target{position:absolute;cursor:none;transition:opacity .3s;animation:targetAppear .3s ease;}
+@keyframes targetAppear{from{transform:scale(0);}to{transform:scale(1);}}
+.target-circle{border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;box-shadow:0 0 15px;border:2px solid;transition:transform .15s;}
+.target-circle:hover{transform:scale(1.1);}
+.target-real{background:radial-gradient(circle,rgba(139,0,0,.7),rgba(80,0,0,.9));border-color:rgba(192,57,43,.9);box-shadow:0 0 18px rgba(192,57,43,.7);animation:realPulse 1.2s ease-in-out infinite;}
+@keyframes realPulse{0%,100%{box-shadow:0 0 10px rgba(192,57,43,.6);}50%{box-shadow:0 0 28px rgba(192,57,43,.9);}}
+.target-fake{background:radial-gradient(circle,rgba(30,30,40,.8),rgba(10,10,20,.9));border-color:rgba(80,80,100,.4);box-shadow:0 0 6px rgba(80,80,100,.3);opacity:.7;}
+.target-score-pop{position:absolute;font-family:'Cinzel',serif;font-size:.8rem;font-weight:700;pointer-events:none;animation:scorePop 1s ease forwards;z-index:10;}
+@keyframes scorePop{0%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(-40px);}}
+.target-accuracy{font-family:'Cinzel',serif;font-size:.7rem;text-align:center;padding:6px;color:rgba(57,255,20,.6);}
+
+/* ══════════ WORLD 4: QUANTUM MEMORY ══════════ */
+.memory-grid{display:grid;gap:6px;width:100%;max-width:min(380px,88vw);}
+.mcard{aspect-ratio:1;border-radius:8px;cursor:none;perspective:600px;position:relative;transition:transform .1s;}
+.mcard:hover:not(.flipped):not(.matched){transform:scale(1.06);}
+.mcard-inner{position:relative;width:100%;height:100%;transition:transform .4s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;}
+.mcard.flipped .mcard-inner,.mcard.matched .mcard-inner{transform:rotateY(180deg);}
+.mcard-front,.mcard-back{position:absolute;inset:0;border-radius:8px;backface-visibility:hidden;display:flex;align-items:center;justify-content:center;}
+.mcard-front{background:linear-gradient(145deg,#0a0520,#160930);border:1px solid rgba(123,47,255,.3);}
+.mcard-front-icon{font-size:clamp(.8rem,2.5vw,1.2rem);color:rgba(123,47,255,.4);}
+.mcard-back{background:linear-gradient(145deg,#0e0424,#1c0838);border:1px solid rgba(255,110,180,.4);transform:rotateY(180deg);font-size:clamp(1rem,3vw,1.6rem);}
+.mcard.matched .mcard-back{background:linear-gradient(145deg,#1a0535,rgba(255,110,180,.25));border-color:rgba(255,110,180,.8);box-shadow:0 0 20px rgba(255,110,180,.4);}
+.mcard.wrong-match .mcard-inner{animation:wrongCard .4s ease;}
+@keyframes wrongCard{0%,100%{transform:rotateY(180deg);}25%{transform:rotateY(180deg) translateX(-5px);}75%{transform:rotateY(180deg) translateX(5px);}}
+
+/* ══════════ WORLD 5: QUANTUM DICE ══════════ */
+.dice-arena{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:360px;}
+.dice-display{display:flex;gap:14px;justify-content:center;}
+.die{width:70px;height:70px;background:linear-gradient(145deg,#1a1200,#2a1e00);border:2px solid rgba(245,197,24,.4);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-family:'Cinzel',serif;color:var(--qg);box-shadow:0 0 15px rgba(245,197,24,.2);transition:transform .1s;}
+.die.rolling{animation:diceRoll .5s ease;}
+@keyframes diceRoll{0%,100%{transform:rotate(0);}25%{transform:rotate(-15deg) scale(1.1);}75%{transform:rotate(15deg) scale(1.1);}}
+.dice-target{font-family:'Cinzel',serif;font-size:.9rem;color:rgba(255,255,255,.6);text-align:center;padding:8px 20px;background:rgba(255,255,255,.05);border:1px solid rgba(245,197,24,.2);border-radius:8px;}
+.dice-target span{color:var(--qg);font-size:1.3rem;font-weight:700;}
+.dice-roll-btn{font-family:'Cinzel Decorative',serif;font-size:.75rem;letter-spacing:4px;text-transform:uppercase;color:#000;background:linear-gradient(135deg,var(--qg),#ff9300);border:none;border-radius:6px;padding:12px 28px;cursor:none;transition:transform .2s,box-shadow .2s;box-shadow:0 0 20px rgba(245,197,24,.3);}
+.dice-roll-btn:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(245,197,24,.45);}
+.dice-roll-btn:disabled{opacity:.4;}
+.dice-history{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;max-width:320px;}
+.dice-pip{width:28px;height:28px;border-radius:5px;background:rgba(245,197,24,.15);border:1px solid rgba(245,197,24,.2);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:.65rem;color:rgba(245,197,24,.7);}
+.dice-pip.win{background:rgba(57,255,20,.2);border-color:rgba(57,255,20,.5);color:#39ff14;}
+.dice-pip.lose{background:rgba(255,71,87,.15);border-color:rgba(255,71,87,.4);color:#ff4757;}
+
+/* ══════════ WORLD 6: QUANTUM SURVIVAL ══════════ */
+.surv-arena{position:relative;width:min(360px,84vw);height:min(280px,65vw);background:rgba(5,3,0,.85);border:1px solid rgba(255,147,0,.2);border-radius:10px;overflow:hidden;}
+.surv-player{position:absolute;width:10%;height:13%;z-index:5;transition:top .12s,left .12s;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
+.ghost{position:absolute;z-index:4;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:top .6s linear,left .6s linear;}
+.safe-zone{position:absolute;border:1px dashed rgba(255,147,0,.3);border-radius:4px;background:rgba(255,147,0,.05);display:flex;align-items:center;justify-content:center;font-size:.5rem;color:rgba(255,147,0,.4);font-family:'Cinzel',serif;letter-spacing:1px;text-transform:uppercase;}
+.surv-arrows{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:8px;}
+
+/* ══════════ WORLD 7: QUANTUM DOORS ══════════ */
+.doors-wrap{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;width:100%;max-width:380px;}
+.door{width:clamp(75px,22vw,100px);height:clamp(110px,30vw,140px);border-radius:10px 10px 0 0;cursor:none;position:relative;transition:transform .2s,box-shadow .2s;overflow:hidden;}
+.door:hover:not(.opened){transform:translateY(-6px) scale(1.04);}
+.door-body{position:absolute;inset:0;border-radius:10px 10px 0 0;border:2px solid;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;}
+.door-icon{font-size:2rem;}
+.door-label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:2px;text-transform:uppercase;}
+.door-knob{width:10px;height:10px;border-radius:50%;position:absolute;right:14px;top:50%;}
+.door.correct .door-body{background:rgba(57,255,20,.15);border-color:#39ff14;box-shadow:0 0 25px rgba(57,255,20,.4);}
+.door.wrong-door .door-body{background:rgba(255,71,87,.15);border-color:#ff4757;animation:doorShk .4s ease;}
+@keyframes doorShk{0%,100%{transform:translateX(0);}25%,75%{transform:translateX(-4px);}50%{transform:translateX(4px);}}
+.door-hint-text{font-size:.6rem;color:rgba(100,200,255,.5);font-family:'Cinzel',serif;letter-spacing:2px;text-align:center;margin-top:8px;}
+.door-quantum-state{font-size:.55rem;color:rgba(100,200,255,.35);font-family:'Cinzel',serif;text-align:center;margin-top:4px;}
+
+/* ══════════ WORLD 8: QUANTUM LAB ══════════ */
+.lab-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:380px;}
+.lab-equation{font-family:'Cinzel',serif;font-size:clamp(.75rem,2.2vw,1.1rem);color:rgba(200,100,255,.8);text-align:center;padding:10px 16px;background:rgba(200,100,255,.06);border:1px solid rgba(200,100,255,.2);border-radius:8px;letter-spacing:2px;}
+.lab-vars{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;}
+.lab-var{background:rgba(200,100,255,.08);border:1px solid rgba(200,100,255,.2);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:5px;}
+.lab-var-name{font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:2px;color:rgba(200,100,255,.6);text-transform:uppercase;}
+.lab-var-btns{display:flex;gap:5px;}
+.lab-vbtn{flex:1;padding:5px;border-radius:5px;border:1px solid rgba(200,100,255,.3);background:rgba(200,100,255,.1);color:rgba(200,100,255,.8);font-family:'Cinzel',serif;font-size:.62rem;cursor:none;transition:all .2s;}
+.lab-vbtn:hover{background:rgba(200,100,255,.22);}
+.lab-vbtn.selected{background:rgba(200,100,255,.3);border-color:rgba(200,100,255,.7);color:#fff;}
+.lab-check-btn{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:#000;background:linear-gradient(135deg,rgba(200,100,255,.9),rgba(120,50,200,.9));border:none;border-radius:6px;padding:11px 24px;cursor:none;transition:all .2s;width:100%;}
+.lab-check-btn:hover{transform:translateY(-2px);}
+.lab-result{font-family:'Cinzel',serif;font-size:.7rem;text-align:center;padding:8px;border-radius:6px;display:none;}
+.lab-result.ok{background:rgba(57,255,20,.12);border:1px solid rgba(57,255,20,.3);color:#39ff14;}
+.lab-result.err{background:rgba(255,71,87,.12);border:1px solid rgba(255,71,87,.3);color:#ff4757;}
+.lab-qubit-viz{display:flex;gap:4px;justify-content:center;}
+.lab-qubit{width:28px;height:28px;border-radius:5px;border:1px solid rgba(200,100,255,.3);display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:.52rem;color:rgba(200,100,255,.5);transition:all .3s;}
+.lab-qubit.active{background:rgba(200,100,255,.2);border-color:rgba(200,100,255,.7);color:#c864ff;box-shadow:0 0 8px rgba(200,100,255,.3);}
+
+/* ══════════ MODALS ══════════ */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(10px);z-index:500;display:none;align-items:center;justify-content:center;padding:14px;}
+.mo.show{display:flex;}
+.mb2{border-radius:15px;padding:clamp(18px,3.5vw,34px);text-align:center;max-width:380px;width:100%;animation:mI .32s cubic-bezier(.18,.89,.32,1.28) both;}
+@keyframes mI{from{opacity:0;transform:scale(.7);}to{opacity:1;transform:scale(1);}}
+.mb2-h{background:linear-gradient(135deg,#0e0202,#1e0606);border:1px solid rgba(231,76,60,.3);box-shadow:0 0 50px rgba(192,57,43,.26);}
+.mb2-q{background:linear-gradient(135deg,#000a18,#001020);border:1px solid rgba(0,212,255,.28);box-shadow:0 0 50px rgba(0,212,255,.18);}
+.mb2-g{background:linear-gradient(135deg,#080600,#141000);border:1px solid rgba(245,197,24,.26);box-shadow:0 0 50px rgba(245,197,24,.18);}
+.mb2-s{background:linear-gradient(135deg,#060400,#100800);border:1px solid rgba(255,147,0,.26);box-shadow:0 0 50px rgba(255,147,0,.18);}
+.mb2-d{background:linear-gradient(135deg,#000a12,#001018);border:1px solid rgba(100,200,255,.26);box-shadow:0 0 50px rgba(100,200,255,.18);}
+.mb2-l{background:linear-gradient(135deg,#080010,#0e001c);border:1px solid rgba(200,100,255,.26);box-shadow:0 0 50px rgba(200,100,255,.18);}
+.mb2-over{background:linear-gradient(135deg,#0a0000,#180000);border:1px solid rgba(231,76,60,.42);box-shadow:0 0 65px rgba(192,57,43,.3);}
+.mb2-mem{background:linear-gradient(135deg,#0a0420,#160830);border:1px solid rgba(255,110,180,.3);box-shadow:0 0 50px rgba(255,110,180,.2);}
+.mico{font-size:2.4rem;margin-bottom:9px;display:block;animation:fi 3s ease-in-out infinite;}
+@keyframes fi{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.mtit{font-family:'Cinzel Decorative',serif;font-size:clamp(.88rem,2.8vw,1.35rem);margin-bottom:7px;}
+.mbdy{font-size:.66rem;color:rgba(255,255,255,.42);line-height:1.7;margin-bottom:17px;}
+.mbtns{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;}
+.mbtn{font-family:'Cinzel',serif;font-size:.54rem;letter-spacing:3px;text-transform:uppercase;padding:9px 18px;border-radius:6px;cursor:none;border:1px solid;transition:all .2s;font-weight:600;}
+.mp-r{background:linear-gradient(135deg,rgba(192,57,43,.86),rgba(100,20,10,.9));border-color:rgba(231,76,60,.42);color:#fff;}
+.mp-q{background:linear-gradient(135deg,rgba(0,212,255,.76),rgba(123,47,255,.76));border-color:rgba(0,212,255,.42);color:#000;}
+.mp-g{background:linear-gradient(135deg,rgba(245,197,24,.8),rgba(180,130,10,.78));border-color:rgba(245,197,24,.42);color:#000;}
+.mp-s{background:linear-gradient(135deg,rgba(255,147,0,.78),rgba(200,80,0,.78));border-color:rgba(255,147,0,.4);color:#000;}
+.mp-d{background:linear-gradient(135deg,rgba(100,200,255,.75),rgba(50,150,220,.75));border-color:rgba(100,200,255,.4);color:#000;}
+.mp-l{background:linear-gradient(135deg,rgba(200,100,255,.75),rgba(120,50,200,.75));border-color:rgba(200,100,255,.38);color:#fff;}
+.mp-m{background:linear-gradient(135deg,rgba(255,110,180,.8),rgba(79,195,247,.68));border-color:rgba(255,110,180,.42);color:#fff;}
+.ms{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.46);}
+.mbtn:hover{transform:translateY(-2px);filter:brightness(1.15);}
+
+/* Quiz */
+.quiz-q{font-family:'Cinzel',serif;font-size:clamp(.8rem,2vw,1rem);color:#fff;margin-bottom:14px;line-height:1.5;}
+.quiz-opts{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
+.qopt{width:100%;font-family:'Raleway',sans-serif;font-size:.76rem;padding:9px 13px;border-radius:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#fff;cursor:none;transition:all .2s;text-align:left;}
+.qopt:hover{background:rgba(255,215,0,.12);border-color:rgba(255,215,0,.35);}
+.qopt.correct{background:rgba(57,255,20,.18)!important;border-color:#39ff14!important;color:#39ff14!important;}
+.qopt.wrong-a{background:rgba(255,71,87,.14)!important;border-color:#ff4757!important;color:#ff4757!important;}
+
+/* Toast */
+#ht{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(15px);background:rgba(5,5,18,.95);border:1px solid rgba(0,212,255,.26);border-radius:9px;padding:8px 14px;font-size:.6rem;color:rgba(255,255,255,.6);backdrop-filter:blur(14px);z-index:300;opacity:0;transition:all .26s;text-align:center;max-width:320px;pointer-events:none;}
+#ht.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#ht strong{color:var(--qb);}
+
+/* Misc */
+.life-flash{position:fixed;inset:0;background:rgba(192,57,43,.22);z-index:800;pointer-events:none;animation:lfl .5s ease forwards;}
+.life-gain{position:fixed;inset:0;background:rgba(57,255,20,.1);z-index:800;pointer-events:none;animation:lfl .6s ease forwards;}
+@keyframes lfl{0%{opacity:1;}100%{opacity:0;}}
+.fp{position:absolute;border-radius:50%;pointer-events:none;animation:fpu linear infinite;opacity:0;}
+@keyframes fpu{0%{transform:translateY(100%) scale(0);opacity:0;}10%{opacity:.42;}90%{opacity:.15;}100%{transform:translateY(-8vh) scale(1);opacity:0;}}
+.cp{position:fixed;pointer-events:none;z-index:400;animation:cfall linear forwards;border-radius:2px;}
+@keyframes cfall{0%{transform:translateY(-18px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+.lb-row strong{color:#fff;}
+.lb-empty{font-size:.6rem;color:rgba(255,255,255,.28);font-style:italic;}
+
+/* ══════════ WORLD LEVEL SELECT SCREEN ══════════ */
+#s-levels{background:var(--qdeep);justify-content:flex-start;padding:0;}
+.lvl-top{width:100%;display:flex;justify-content:space-between;align-items:center;padding:11px 17px;background:rgba(0,0,0,.44);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:6px;}
+.lvl-body{width:100%;overflow-y:auto;padding:18px 16px 60px;display:flex;flex-direction:column;align-items:center;}
+.lvl-title{text-align:center;margin-bottom:18px;width:100%;}
+.lvl-world-name{font-family:'Cinzel Decorative',serif;font-size:clamp(1.1rem,3.5vw,2rem);margin-bottom:4px;}
+.lvl-world-sub{font-size:.52rem;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:0;}
+.lvl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;width:100%;max-width:860px;}
+.lvl-card{position:relative;border-radius:12px;overflow:hidden;cursor:none;transition:transform .28s cubic-bezier(.2,.8,.3,1),box-shadow .28s;min-height:140px;display:flex;flex-direction:column;justify-content:flex-end;border:1px solid rgba(255,255,255,.1);}
+.lvl-card:not(.lvl-locked):hover{transform:translateY(-5px) scale(1.02);}
+.lvl-card.lvl-locked{opacity:.55;cursor:default;}
+.lvl-card-bg{position:absolute;inset:0;z-index:0;}
+.lvl-card-num{position:absolute;top:10px;right:12px;font-family:'Cinzel Decorative',serif;font-size:clamp(1.8rem,5vw,2.8rem);opacity:.09;z-index:1;line-height:1;}
+.lvl-card-body{position:relative;z-index:2;padding:12px;background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.4) 55%,transparent 100%);}
+.lvl-card-badge{display:inline-block;font-size:.42rem;letter-spacing:3px;text-transform:uppercase;color:#fff;padding:2px 7px;border-radius:20px;margin-bottom:5px;font-weight:700;}
+.lvl-card-name{font-family:'Cinzel',serif;font-size:.7rem;color:#fff;margin-bottom:3px;}
+.lvl-card-info{font-size:.5rem;color:rgba(255,255,255,.36);margin-bottom:8px;}
+.lvl-card-btn{width:100%;font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:3px;text-transform:uppercase;color:#fff;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);padding:8px;border-radius:4px;cursor:none;transition:all .2s;}
+.lvl-card-btn:hover:not(:disabled){letter-spacing:5px;}
+.lvl-card-btn:disabled{opacity:.4;cursor:default;}
+.lvl-cleared-badge{position:absolute;top:8px;left:8px;z-index:4;background:rgba(57,255,20,.15);border:1px solid rgba(57,255,20,.42);border-radius:20px;padding:2px 8px;font-size:.42rem;letter-spacing:2px;text-transform:uppercase;color:#39ff14;font-weight:700;}
+.lvl-lock-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(3px);z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:12px;}
+.lvl-lock-icon{font-size:1.5rem;opacity:.6;}
+.lvl-lock-text{font-family:'Cinzel',serif;font-size:.44rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.28);}
+
+/* ══════════ IMPROVED WORLD BACKGROUNDS ══════════ */
+.bg-treasure{
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(192,57,43,.18) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 70%, rgba(180,30,10,.14) 0%, transparent 50%),
+    linear-gradient(180deg,#060102,#0d0505 50%,#040101);
+}
+.bg-maze{
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(0,212,255,.14) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(123,47,255,.1) 0%, transparent 45%),
+    linear-gradient(180deg,#000810,#000a1a 55%,#000510);
+}
+.bg-target{
+  background:
+    radial-gradient(circle 35% at 50% 50%, rgba(57,255,20,.07) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 50% at 50% 0%, rgba(57,255,20,.12) 0%, transparent 50%),
+    linear-gradient(180deg,#010801,#030f03 60%,#010501);
+}
+.bg-memory{
+  background:
+    radial-gradient(ellipse 80% 55% at 30% 30%, rgba(255,110,180,.16) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 80% 80%, rgba(123,47,255,.1) 0%, transparent 45%),
+    linear-gradient(180deg,#06001a,#05011a 55%,#03000f);
+}
+.bg-dice{
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(245,197,24,.14) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 50% at 85% 85%, rgba(255,147,0,.1) 0%, transparent 50%),
+    linear-gradient(180deg,#090700,#0d0a00 55%,#060500);
+}
+/* Animated dice bg */
+.bg-dice::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    radial-gradient(circle 1px at 15% 25%, rgba(245,197,24,.35) 0, transparent 1px),
+    radial-gradient(circle 1px at 85% 15%, rgba(245,197,24,.25) 0, transparent 1px),
+    radial-gradient(circle 1px at 50% 80%, rgba(255,147,0,.3) 0, transparent 1px),
+    radial-gradient(circle 1px at 25% 70%, rgba(245,197,24,.2) 0, transparent 1px);
+  animation:diceBgPulse 4s ease-in-out infinite;
+}
+@keyframes diceBgPulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+.bg-survival{
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(255,147,0,.13) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 10% 90%, rgba(192,57,43,.1) 0%, transparent 45%),
+    linear-gradient(180deg,#080400,#100800 55%,#060400);
+}
+.bg-doors{
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 20%, rgba(100,200,255,.12) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 90% 80%, rgba(0,212,255,.08) 0%, transparent 45%),
+    linear-gradient(180deg,#000a12,#001018 55%,#000810);
+}
+.bg-lab{
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 10%, rgba(200,100,255,.14) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 20% 80%, rgba(123,47,255,.1) 0%, transparent 45%),
+    linear-gradient(180deg,#060010,#0a0018 55%,#040010);
+}
+
+/* Floating dice elements for World 5 */
+.dice-float{position:fixed;pointer-events:none;z-index:0;font-size:1.4rem;opacity:0;animation:diceFloat linear infinite;}
+@keyframes diceFloat{0%{transform:translateY(110vh) rotate(0deg);opacity:0;}8%{opacity:.18;}92%{opacity:.12;}100%{transform:translateY(-10vh) rotate(720deg);opacity:0;}}
+
+/* Ghost floaters in survival */
+.ghost-float{position:fixed;pointer-events:none;z-index:0;font-size:1.2rem;opacity:0;animation:ghostFloat linear infinite;}
+@keyframes ghostFloat{0%{transform:translateX(-10vw) translateY(0) scale(.8);opacity:0;}10%{opacity:.15;}50%{transform:translateX(50vw) translateY(-8vh) scale(1.1);}90%{opacity:.1;}100%{transform:translateX(110vw) translateY(4vh) scale(.8);opacity:0;}}
+
+/* Maze ghost enemies */
+.maze-ghost{position:absolute;z-index:4;font-size:.85rem;transition:top .5s linear,left .5s linear;pointer-events:none;}
+
+/* ════════════ INDEX-16 TREASURE THEMES ════════════ */
+/* Level-select card colours */
+.ch .lcbg{background:radial-gradient(ellipse 80% 60% at 50% 80%,rgba(192,57,43,.28) 0%,transparent 55%),linear-gradient(180deg,#0d0505,#1a0808);}
+.ch{border:1px solid rgba(192,57,43,.36);}.ch:hover{box-shadow:0 13px 42px rgba(192,57,43,.28);}
+.ch .lcbdg{background:rgba(192,57,43,.85);}.ch .lcent{background:linear-gradient(135deg,rgba(192,57,43,.82),rgba(100,20,10,.88));border-color:rgba(231,76,60,.4);}
+.cd .lcbg{background:radial-gradient(ellipse 80% 55% at 50% 25%,rgba(255,110,180,.18) 0%,transparent 55%),linear-gradient(180deg,#07011f,#100828);}
+.cd{border:1px solid rgba(255,110,180,.28);}.cd:hover{box-shadow:0 13px 42px rgba(255,110,180,.24);}
+.cd .lcbdg{background:rgba(255,110,180,.72);}.cd .lcent{background:linear-gradient(135deg,rgba(255,110,180,.75),rgba(79,195,247,.62));border-color:rgba(255,110,180,.4);}
+.cq .lcbg{background:radial-gradient(ellipse 70% 55% at 50% 50%,rgba(0,212,255,.11) 0%,transparent 65%),linear-gradient(135deg,#020810,#050f1e);}
+.cq{border:1px solid rgba(0,212,255,.24);}.cq:hover{box-shadow:0 13px 42px rgba(0,212,255,.22);}
+.cq .lcbdg{background:rgba(0,212,255,.72);color:#000;}.cq .lcent{background:linear-gradient(135deg,rgba(0,212,255,.75),rgba(123,47,255,.75));border-color:rgba(0,212,255,.4);}
+.cm .lcbg{background:radial-gradient(ellipse 80% 55% at 50% 30%,rgba(245,197,24,.11) 0%,transparent 55%),linear-gradient(180deg,#0a0800,#161000);}
+.cm{border:1px solid rgba(245,197,24,.24);}.cm .lcbdg{background:rgba(245,197,24,.78);color:#000;}
+.cm .lcent{background:linear-gradient(135deg,rgba(245,197,24,.8),rgba(180,130,10,.78));border-color:rgba(245,197,24,.4);}
+.cn .lcbg{background:radial-gradient(ellipse 80% 55% at 50% 50%,rgba(57,255,20,.09) 0%,transparent 60%),linear-gradient(180deg,#010a01,#031403);}
+.cn{border:1px solid rgba(57,255,20,.2);}.cn .lcbdg{background:rgba(57,255,20,.68);color:#000;}
+.cn .lcent{background:linear-gradient(135deg,rgba(57,255,20,.7),rgba(0,150,30,.7));border-color:rgba(57,255,20,.35);}
+.cc .lcbg{background:radial-gradient(ellipse 80% 55% at 50% 50%,rgba(255,147,0,.09) 0%,transparent 60%),linear-gradient(180deg,#0a0400,#180a00);}
+.cc{border:1px solid rgba(255,147,0,.2);}.cc .lcbdg{background:rgba(255,147,0,.72);color:#000;}
+.cc .lcent{background:linear-gradient(135deg,rgba(255,147,0,.75),rgba(200,80,0,.75));border-color:rgba(255,147,0,.35);}
+.cg2 .lcbg{background:radial-gradient(ellipse 80% 55% at 50% 50%,rgba(100,200,255,.08) 0%,transparent 60%),linear-gradient(180deg,#000810,#001020);}
+.cg2{border:1px solid rgba(100,200,255,.18);}.cg2 .lcbdg{background:rgba(100,200,255,.68);color:#000;}
+.cg2 .lcent{background:linear-gradient(135deg,rgba(100,200,255,.72),rgba(50,150,220,.72));border-color:rgba(100,200,255,.32);}
+.ca .lcbg{background:radial-gradient(ellipse 80% 55% at 50% 50%,rgba(200,100,255,.09) 0%,transparent 60%),linear-gradient(180deg,#080010,#100020);}
+.ca{border:1px solid rgba(200,100,255,.18);}.ca .lcbdg{background:rgba(200,100,255,.68);}
+.ca .lcent{background:linear-gradient(135deg,rgba(200,100,255,.72),rgba(120,50,200,.72));border-color:rgba(200,100,255,.3);}
+
+/* Level card layout (index-16 style) */
+.lcard{position:relative;border-radius:11px;overflow:hidden;cursor:none;transition:transform .28s cubic-bezier(.2,.8,.3,1),box-shadow .28s;min-height:200px;display:flex;flex-direction:column;justify-content:flex-end;}
+.lcard:not(.locked):hover{transform:translateY(-5px) scale(1.02);}
+.lcard.locked{opacity:.6;cursor:default;}
+.lcbg{position:absolute;inset:0;z-index:0;}
+.lce{position:absolute;font-size:clamp(52px,11vw,78px);top:9px;right:9px;opacity:.09;z-index:1;pointer-events:none;line-height:1;}
+.lcb{position:relative;z-index:2;padding:13px;background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,rgba(0,0,0,.4) 55%,transparent 100%);}
+.lcbdg{display:inline-block;font-size:.46rem;letter-spacing:3px;text-transform:uppercase;color:#fff;padding:2px 7px;border-radius:30px;margin-bottom:5px;font-weight:700;}
+.lcn2{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:2px;}
+.lcname{font-family:'Cinzel Decorative',serif;font-size:clamp(.78rem,1.8vw,1rem);color:#fff;margin-bottom:4px;line-height:1.2;}
+.lcst{font-size:.54rem;color:rgba(255,255,255,.36);margin-bottom:8px;}
+.lcent{width:100%;font-family:'Cinzel',serif;font-size:.56rem;letter-spacing:3px;text-transform:uppercase;color:#fff;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.15);padding:8px;border-radius:4px;cursor:none;transition:all .2s;}
+.lcent:hover:not(:disabled){letter-spacing:5px;}
+.lcent:disabled{opacity:.3;cursor:default;}
+.lclk{position:absolute;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(4px);z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:11px;}
+.lclki{font-size:1.7rem;opacity:.65;}
+.lclkt{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.28);}
+.cbdg{position:absolute;top:8px;left:8px;z-index:4;background:rgba(57,255,20,.15);border:1px solid rgba(57,255,20,.42);border-radius:30px;padding:2px 8px;font-size:.46rem;letter-spacing:2px;text-transform:uppercase;color:#39ff14;font-weight:700;}
+
+/* Treasure card grid */
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(182px,1fr));gap:13px;width:100%;max-width:860px;}
+
+/* Treasure level-select HUD */
+.hud{
+  display:flex;
+  gap:clamp(6px,2vw,16px);
+  margin-bottom:18px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(0,212,255,.11);
+  border-radius:9px;
+  padding:10px clamp(9px,2vw,18px);
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.hi{display:flex;align-items:center;gap:5px;}
+.hv{font-family:'Cinzel',serif;font-size:.85rem;font-weight:700;}
+.hl2{font-size:.48rem;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.26);}
+.hdiv{width:1px;background:rgba(255,255,255,.08);align-self:stretch;}
+
+
+/* Treasure game — per-theme backgrounds */
+.t-horror{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(192,57,43,.16) 0%,transparent 50%),linear-gradient(180deg,#060102,#0d0505 50%,#040101);}
+.t-disney{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(255,110,180,.18) 0%,transparent 50%),linear-gradient(180deg,#06001a,#05011a);}
+.t-quantum{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(0,212,255,.12) 0%,transparent 50%),linear-gradient(180deg,#000810,#000a1a);}
+.t-mythic{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(245,197,24,.12) 0%,transparent 50%),linear-gradient(180deg,#080600,#0a0800);}
+.t-neon{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(57,255,20,.10) 0%,transparent 50%),linear-gradient(180deg,#010801,#030f03);}
+.t-cosmic{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(255,147,0,.10) 0%,transparent 50%),linear-gradient(180deg,#080400,#100800);}
+.t-glacier{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(100,200,255,.10) 0%,transparent 50%),linear-gradient(180deg,#000a12,#001018);}
+.t-abyss{background:radial-gradient(ellipse 100% 50% at 50% 0%,rgba(200,100,255,.10) 0%,transparent 50%),linear-gradient(180deg,#060010,#0a0018);}
+@keyframes hflk{0%,93%,100%{opacity:1;}96%{opacity:.7;}98%{opacity:.58;}}
+.hflk{animation:hflk 8s infinite;}
+
+/* Themed title colours */
+.tx-h{color:#e74c3c;text-shadow:0 0 14px rgba(231,76,60,.55);}
+.tx-d{color:#ff6eb4;text-shadow:0 0 14px rgba(255,110,180,.5);}
+.tx-q{color:#00fff2;text-shadow:0 0 14px rgba(0,255,242,.45);}
+.tx-m{color:#ffc107;text-shadow:0 0 14px rgba(255,193,7,.45);}
+.tx-n{color:#39ff14;text-shadow:0 0 14px rgba(57,255,20,.5);}
+.tx-c{color:#ff9300;text-shadow:0 0 14px rgba(255,147,0,.5);}
+.tx-g{color:#64c8ff;text-shadow:0 0 14px rgba(100,200,255,.45);}
+.tx-a{color:#c864ff;text-shadow:0 0 14px rgba(200,100,255,.45);}
+
+/* Treasure hint-button themes */
+.hb-h{color:#e74c3c;border-color:rgba(231,76,60,.36);background:rgba(192,57,43,.10);}
+.hb-d{color:#ff6eb4;border-color:rgba(255,110,180,.36);background:rgba(255,110,180,.08);}
+.hb-q{color:#00fff2;border-color:rgba(0,255,242,.30);background:rgba(0,255,242,.07);}
+.hb-m{color:#ffc107;border-color:rgba(255,193,7,.36);background:rgba(255,193,7,.08);}
+.hb-n{color:#39ff14;border-color:rgba(57,255,20,.30);background:rgba(57,255,20,.07);}
+.hb-c{color:#ff9300;border-color:rgba(255,147,0,.33);background:rgba(255,147,0,.08);}
+.hb-g{color:#64c8ff;border-color:rgba(100,200,255,.28);background:rgba(100,200,255,.07);}
+.hb-a{color:#c864ff;border-color:rgba(200,100,255,.28);background:rgba(200,100,255,.07);}
+
+/* Treasure block themes */
+.bh{background:linear-gradient(145deg,#170404,#240606);border:1px solid rgba(255,255,255,.08);}
+.bh .tb-glyph{color:rgba(192,57,43,.72);}
+.bh:hover:not(.rev){box-shadow:0 0 13px rgba(192,57,43,.42);}
+.bh.tf{background:linear-gradient(145deg,#380000,#760000);border-color:rgba(231,76,60,.88);box-shadow:0 0 26px rgba(231,76,60,.7)!important;}
+.bd{background:linear-gradient(145deg,#0b041e,#14082c);border:1px solid rgba(255,255,255,.08);}
+.bd .tb-glyph{color:rgba(255,110,180,.68);}
+.bd:hover:not(.rev){box-shadow:0 0 13px rgba(255,110,180,.35);}
+.bd.tf{background:linear-gradient(145deg,#240432,rgba(255,110,180,.22));border-color:rgba(255,110,180,.88);box-shadow:0 0 26px rgba(255,110,180,.6)!important;}
+.bm{background:linear-gradient(145deg,#090700,#160f00);border:1px solid rgba(255,255,255,.08);}
+.bm .tb-glyph{color:rgba(245,197,24,.65);}
+.bm:hover:not(.rev){box-shadow:0 0 13px rgba(245,197,24,.32);}
+.bm.tf{background:linear-gradient(145deg,#1a1200,rgba(245,197,24,.2));border-color:rgba(245,197,24,.92);box-shadow:0 0 26px rgba(245,197,24,.62)!important;}
+.bn{background:linear-gradient(145deg,#010900,#021200);border:1px solid rgba(255,255,255,.08);}
+.bn .tb-glyph{color:rgba(57,255,20,.68);}
+.bn:hover:not(.rev){box-shadow:0 0 13px rgba(57,255,20,.32);}
+.bn.tf{background:linear-gradient(145deg,#041e04,rgba(57,255,20,.18));border-color:rgba(57,255,20,.88);box-shadow:0 0 26px rgba(57,255,20,.55)!important;}
+.bco{background:linear-gradient(145deg,#090300,#140700);border:1px solid rgba(255,255,255,.08);}
+.bco .tb-glyph{color:rgba(255,147,0,.68);}
+.bco:hover:not(.rev){box-shadow:0 0 13px rgba(255,147,0,.32);}
+.bco.tf{background:linear-gradient(145deg,#1c0b00,rgba(255,147,0,.2));border-color:rgba(255,147,0,.88);box-shadow:0 0 26px rgba(255,147,0,.55)!important;}
+.bg2{background:linear-gradient(145deg,#000710,#000e18);border:1px solid rgba(255,255,255,.08);}
+.bg2 .tb-glyph{color:rgba(100,200,255,.7);}
+.bg2:hover:not(.rev){box-shadow:0 0 13px rgba(100,200,255,.3);}
+.bg2.tf{background:linear-gradient(145deg,#001622,rgba(100,200,255,.18));border-color:rgba(100,200,255,.88);box-shadow:0 0 26px rgba(100,200,255,.55)!important;}
+.ba{background:linear-gradient(145deg,#05000e,#0a001c);border:1px solid rgba(255,255,255,.08);}
+.ba .tb-glyph{color:rgba(200,100,255,.68);}
+.ba:hover:not(.rev){box-shadow:0 0 13px rgba(200,100,255,.3);}
+.ba.tf{background:linear-gradient(145deg,#10002c,rgba(200,100,255,.18));border-color:rgba(200,100,255,.88);box-shadow:0 0 26px rgba(200,100,255,.55)!important;}
+
+/* progress bar colours */
+.fbf-h{background:linear-gradient(90deg,#8b0000,#e74c3c);}
+.fbf-d{background:linear-gradient(90deg,#ffd54f,#ff6eb4);}
+.fbf-q{background:linear-gradient(90deg,var(--qb),#00fff2);}
+.fbf-m{background:linear-gradient(90deg,#8b6914,#ffc107);}
+.fbf-n{background:linear-gradient(90deg,#1a7a00,#39ff14);}
+.fbf-c{background:linear-gradient(90deg,#7a3a00,#ff9300);}
+.fbf-g{background:linear-gradient(90deg,#006080,#64c8ff);}
+.fbf-a{background:linear-gradient(90deg,#500080,#c864ff);}
+
+/* Floating particles */
+.fp{position:absolute;border-radius:50%;pointer-events:none;animation:fpu linear infinite;opacity:0;}
+@keyframes fpu{0%{transform:translateY(100%) scale(0);opacity:0;}10%{opacity:.42;}90%{opacity:.16;}100%{transform:translateY(-8vh) scale(1);opacity:0;}}
+
+/* hint glow */
+@keyframes hintPulse{0%,100%{box-shadow:0 0 6px var(--hc,#00d4ff);}50%{box-shadow:0 0 22px var(--hc,#00d4ff);}}
+.hint-glow{animation:hintPulse .9s ease-in-out 3;}
+
+/* Disney stars */
+.dstar{position:absolute;pointer-events:none;animation:stwink linear infinite;}
+@keyframes stwink{0%,100%{opacity:.1;transform:scale(.6);}50%{opacity:.78;transform:scale(1.1);}}
+
+/* Confetti */
+.cp{position:fixed;pointer-events:none;z-index:400;animation:cfall linear forwards;border-radius:2px;}
+@keyframes cfall{0%{transform:translateY(-18px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+
+/* Treasure level-select screen specifics */
+#s-treasure{background:var(--qdeep);justify-content:flex-start;padding:0;}
+.trlev-top{width:100%;display:flex;justify-content:space-between;align-items:center;padding:11px 17px;background:rgba(0,0,0,.44);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:7px;z-index:10;}
+.trlev-body{width:100%;overflow-y:auto;padding:20px 16px 60px;display:flex;flex-direction:column;align-items:center;}
+.trlev-h{text-align:center;margin-bottom:18px;width:100%;}
+.trlev-eye{font-size:.52rem;letter-spacing:6px;text-transform:uppercase;color:var(--qb);opacity:.62;margin-bottom:6px;}
+.trlev-tit{font-family:'Cinzel Decorative',serif;font-size:clamp(1.1rem,3.5vw,2rem);background:linear-gradient(135deg,#fff,var(--qb));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+
+/* Leaderboard panel inside treasure select */
+.lb-panel{width:100%;max-width:860px;margin-bottom:14px;background:rgba(0,0,0,.28);border:1px solid rgba(0,212,255,.12);border-radius:9px;padding:9px 15px;}
+.lb-title{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:4px;text-transform:uppercase;color:rgba(0,212,255,.55);margin-bottom:6px;}
+.lb-empty{font-size:.6rem;color:rgba(255,255,255,.28);font-style:italic;}
+.lb-rows{display:flex;gap:12px;flex-wrap:wrap;}
+.lb-row{font-size:.62rem;color:rgba(255,255,255,.45);}
+.lb-row strong{color:#fff;}
+
+/* Treasure game HUD overrides */
+.action-btns{display:flex;gap:4px;}
+.qzbtn2{border-color:rgba(255,215,0,.4)!important;color:#ffd700!important;background:rgba(255,215,0,.08)!important;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div id="cur"></div><div id="cr"></div>
+<canvas id="bgc"></canvas>
+<div id="ht"></div>
+
+<!-- AUTH -->
+<section class="screen active" id="s-auth">
+  <div class="ao ao1"></div><div class="ao ao2"></div>
+  <div class="auth-card">
+    <div class="auth-logo">Lost in Random</div>
+    <div class="auth-sub">8 Quantum Worlds · Qubit Emulation</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-l" onclick="switchTab('login')">Login</button>
+      <button class="auth-tab" id="tab-r" onclick="switchTab('register')">Register</button>
+    </div>
+    <div id="form-l">
+      <div class="auth-field"><label>Username</label><input class="auth-inp" id="l-u" placeholder="Enter username"/></div>
+      <div class="auth-field"><label>Password</label><input class="auth-inp" id="l-p" type="password" placeholder="Enter password"/></div>
+      <button class="auth-btn" onclick="doLogin()">Enter Quantum Realm</button>
+      <div class="auth-msg" id="msg-l"></div>
+      <div class="auth-saved" id="auth-saved">✓ Saved from last session</div>
+    </div>
+    <div id="form-r" style="display:none">
+      <div class="auth-field"><label>Username</label><input class="auth-inp" id="r-u" placeholder="Choose username"/></div>
+      <div class="auth-field"><label>Password</label><input class="auth-inp" id="r-p" type="password" placeholder="Min 4 characters"/></div>
+      <button class="auth-btn" onclick="doRegister()">Create Account</button>
+      <div class="auth-msg" id="msg-r"></div>
+    </div>
+    <span class="auth-guest" onclick="guestPlay()">▸ Play as Guest</span>
+  </div>
+</section>
+
+<!-- HERO -->
+<section class="screen" id="sh">
+  <div class="gbg"></div><div class="horb ho1"></div><div class="horb ho2"></div>
+  <div class="htopbar">
+    <span class="htb-l" id="hero-lbl">👤 Guest</span>
+    <div class="htb-r">
+      <button class="hbtn2 hbtn2-g" onclick="fetchLeaderboard();sClick()">🏆 Board</button>
+      <button class="hbtn2 hbtn2-b" onclick="SS('s-auth');sClick()">Switch</button>
+    </div>
+  </div>
+  <div class="hero-body">
+    <div class="qart">
+      <div class="qring qr1"><div class="qdot" style="background:var(--qb);box-shadow:0 0 10px var(--qb)"></div></div>
+      <div class="qring qr2"><div class="qdot" style="background:var(--qg);box-shadow:0 0 10px var(--qg)"></div></div>
+      <div class="qring qr3"><div class="qdot" style="background:var(--qp);box-shadow:0 0 10px var(--qp)"></div></div>
+      <div class="qcore"><svg width="44" height="44" viewBox="0 0 44 44"><polygon points="22,2 40,12 40,32 22,42 4,32 4,12" fill="none" stroke="rgba(0,212,255,.72)" stroke-width="1.2"/><polygon points="22,9 34,16 34,28 22,35 10,28 10,16" fill="none" stroke="rgba(123,47,255,.42)" stroke-width="1"/><circle cx="22" cy="22" r="5.5" fill="rgba(0,212,255,.1)" stroke="rgba(0,212,255,.62)" stroke-width="1.2"/><circle cx="22" cy="22" r="2" fill="rgba(0,212,255,.9)"/><circle cx="22" cy="2" r="1.6" fill="rgba(0,212,255,.8)"/><circle cx="40" cy="12" r="1.6" fill="rgba(123,47,255,.8)"/><circle cx="40" cy="32" r="1.6" fill="rgba(245,197,24,.8)"/><circle cx="22" cy="42" r="1.6" fill="rgba(0,212,255,.8)"/><circle cx="4" cy="32" r="1.6" fill="rgba(123,47,255,.8)"/><circle cx="4" cy="12" r="1.6" fill="rgba(245,197,24,.8)"/></svg></div>
+    </div>
+    <div class="hero-ttl">
+      <div class="hero-eye">Quantum ML · Qubit Emulation · 8 Worlds</div>
+      <h1 class="hero-title">Lost in<br>Random</h1>
+      <div class="hero-sub">Explore · Collapse · Discover</div>
+    </div>
+    <div class="worlds-teaser">
+      <div class="wt wt1"><div class="wti">💎</div>Treasure</div>
+      <div class="wt wt2"><div class="wti">🧩</div>Maze</div>
+      <div class="wt wt3"><div class="wti">🎯</div>Target</div>
+      <div class="wt wt4"><div class="wti">🃏</div>Memory</div>
+      <div class="wt wt5"><div class="wti">🎲</div>Dice</div>
+      <div class="wt wt6"><div class="wti">👻</div>Survival</div>
+      <div class="wt wt7"><div class="wti">🚪</div>Doors</div>
+      <div class="wt wt8"><div class="wti">🧪</div>Lab</div>
+    </div>
+    <button class="bstart" onclick="startLoading();sClick()">Begin Quest</button>
+  </div>
+</section>
+
+<!-- LOADING -->
+<section class="screen" id="sl">
+  <div class="lt">Initializing 8 Quantum Worlds</div>
+  <div class="qlw"><div class="qlr qlr1"></div><div class="qlr qlr2"></div><div class="qlr qlr3"></div><div class="qlc">⚛️</div></div>
+  <div class="pw"><div class="pt"><span>Quantum State</span><span id="pct">0%</span></div><div class="ptrack"><div class="pfill" id="pf"></div></div></div>
+  <div class="lstatus" id="ls">Calibrating qubits...</div>
+  <div class="qbr"><div class="qb2">|0⟩</div><div class="qb2">|1⟩</div><div class="qb2">|+⟩</div><div class="qb2">|−⟩</div><div class="qb2">|ψ⟩</div><div class="qb2">|ϕ⟩</div></div>
+</section>
+
+<!-- WORLD HUB -->
+<section class="screen" id="s-hub">
+  <div class="hub-top">
+    <span style="font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:3px;color:rgba(255,255,255,.35);text-transform:uppercase" id="hub-lbl">👤 Guest</span>
+    <div style="display:flex;gap:6px;">
+      <button class="hbtn2 hbtn2-g" onclick="fetchLeaderboard();sClick()">🏆</button>
+      <button class="hbtn2 hbtn2-b" onclick="SS('sh');sClick()">← Home</button>
+    </div>
+  </div>
+  <div class="hub-body">
+    <div class="hub-title"><div class="hub-eye">⚛️ Select Your Quantum World</div><h2 class="hub-h">8 Worlds Await</h2></div>
+    <div class="mlb" id="mlb" style="display:none"><div class="mlbt">🏆 Top Scores</div><div class="mlbr" id="mlbr"></div></div>
+    <div class="phud">
+      <div class="phi"><div><div class="phv" id="hub-u">Explorer</div><div class="phl">Player</div></div></div>
+      <div class="phdiv"></div>
+      <div class="phi"><div><div class="phv"><span class="hrt" id="hr1">❤️</span><span class="hrt" id="hr2">❤️</span><span class="hrt" id="hr3">❤️</span></div><div class="phl">Lives</div></div></div>
+      <div class="phdiv"></div>
+      <div class="phi"><div><div class="phv" id="hub-score">0</div><div class="phl">Score</div></div></div>
+      <div class="phdiv"></div>
+      <div class="phi"><div><div class="phv" id="hub-cleared">0/8</div><div class="phl">Cleared</div></div></div>
+    </div>
+    <div class="worlds-grid" id="worlds-grid"></div>
+  </div>
+</section>
+
+
+<!-- TREASURE HUNT LEVEL SELECT (index-16 style) -->
+<section class="screen" id="s-treasure">
+  <div class="trlev-top">
+    <span class="htb-l" id="trlev-p">👤 Guest</span>
+    <div style="display:flex;gap:6px;">
+      <button class="hbtn2 hbtn2-g" onclick="fetchLeaderboard();sClick()">🏆</button>
+      <button class="hbtn2 hbtn2-b" onclick="backToHub();sClick()">← Worlds</button>
+    </div>
+  </div>
+  <div class="trlev-body">
+    <div class="trlev-h">
+      <div class="trlev-eye">💎 Quantum Treasure Hunt</div>
+      <h2 class="trlev-tit">Choose Your Realm</h2>
+    </div>
+    <div class="lb-panel" id="tr-lb-panel">
+      <div class="lb-title">🏆 Leaderboard</div>
+      <div class="lb-rows" id="tr-lb-rows"><div class="lb-empty">Loading scores...</div></div>
+    </div>
+    <div class="hud" id="tr-hud">
+      <div class="hi"><div><div class="hv" id="tr-hud-u">Explorer</div><div class="hl2">Player</div></div></div>
+      <div class="hdiv"></div>
+      <div class="hi"><div><div class="hv"><span class="hrt" id="thr1">❤️</span><span class="hrt" id="thr2">❤️</span><span class="hrt" id="thr3">❤️</span></div><div class="hl2">Lives</div></div></div>
+      <div class="hdiv"></div>
+      <div class="hi"><div class="hv">💎</div><div><div class="hv" id="tr-found">0</div><div class="hl2">Found</div></div></div>
+      <div class="hdiv"></div>
+      <div class="hi"><div><div class="hv" id="tr-score">0</div><div class="hl2">Score</div></div></div>
+    </div>
+    <div class="cg" id="cg"></div>
+  </div>
+</section>
+
+<!-- WORLD LEVEL SELECT -->
+<section class="screen" id="s-levels">
+  <div class="lvl-top">
+    <span style="font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:3px;color:rgba(255,255,255,.35);text-transform:uppercase" id="lvl-lbl">👤 Guest</span>
+    <div style="display:flex;gap:6px;">
+      <button class="hbtn2 hbtn2-b" onclick="backToHub();sClick()" id="lvl-back">← Worlds</button>
+    </div>
+  </div>
+  <div class="lvl-body">
+    <div class="lvl-title">
+      <div class="lvl-world-sub" id="lvl-world-sub">Select Level</div>
+      <div class="lvl-world-name" id="lvl-world-name">—</div>
+    </div>
+    <div class="lvl-grid" id="lvl-grid"></div>
+  </div>
+</section>
+
+<!-- GAME SCREENS (one per world, dynamically shown) -->
+<section class="screen gscreen" id="sg">
+  <div class="gtb" id="gtb">
+    <button class="bbk" onclick="showCurrentLevelSelect()">← Levels</button>
+    <div class="gtbt" id="gtbt">—</div>
+    <div class="gtbs">
+      <div class="gs2"><span id="gh"></span></div>
+      <div class="gs2"><span class="glb" id="g-score-lbl">⚡</span><span id="gsc">0</span></div>
+      <div class="timerw"><div class="timerbar"><div class="timerfill" id="tf"></div></div><div class="timerd t-ok" id="td">60</div></div>
+      <button class="topbtn" id="hbtn" onclick="useHint()">💡(<span id="ghi">1</span>)</button>
+      <button class="topbtn" id="qzbtn" onclick="openQuiz()" style="background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.35);color:#ffd700;font-size:.44rem;letter-spacing:2px;">❓+Life</button>
+    </div>
+  </div>
+  <div class="gi" id="gi">
+    <div class="linfo"><div class="lisub" id="lsub">World</div><div class="litit" id="ltit">—</div><div class="lidesc" id="ldesc">—</div></div>
+    <div class="fb"><div class="fbt"><span id="fbl-left">Progress</span><span id="fbl">0/0</span></div><div class="fbtrack"><div class="fbf" id="fbf"></div></div></div>
+    <div id="game-area"></div>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="mo" id="mo">
+  <div class="mb2" id="mb2">
+    <span class="mico" id="mico">💎</span>
+    <div class="mtit" id="mtit">—</div>
+    <div class="mbdy" id="mbdy">—</div>
+    <div class="mbtns" id="mbtns"></div>
+  </div>
+</div>
+
+<script>
+/* ══ CURSOR ══ */
+const cur=document.getElementById('cur'),cr=document.getElementById('cr');
+let mx=0,my=0,rx=0,ry=0,cursorStarted=false;
+cur.style.opacity='0';cr.style.opacity='0';
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  if(!cursorStarted){rx=mx;ry=my;cur.style.opacity='1';cr.style.opacity='1';cursorStarted=true;}
+});
+(function ac(){
+  cur.style.left=mx+'px';cur.style.top=my+'px';
+  rx+=(mx-rx)*.18;ry+=(my-ry)*.18;
+  cr.style.left=rx+'px';cr.style.top=ry+'px';
+  requestAnimationFrame(ac);
+})();
+function setCC(c){cur.style.background=c;cur.style.boxShadow=`0 0 10px ${c},0 0 20px ${c}`;cr.style.borderColor=c;}
+document.addEventListener('mouseover',e=>{
+  if(e.target.matches('button,.wcard,.tb:not(.rev),.mcard:not(.matched),.door:not(.opened),.target-circle,.qopt,.maze-btn,.surv-arrows button,.lab-vbtn,.lab-check-btn,.dice-roll-btn,.auth-tab,.auth-guest,.wt')){cr.style.width='44px';cr.style.height='44px';}
+  else{cr.style.width='32px';cr.style.height='32px';}
+});
+
+/* ══ BG CANVAS ══ */
+const bgc=document.getElementById('bgc'),bgx=bgc.getContext('2d');
+let pts=[];function rsz(){bgc.width=innerWidth;bgc.height=innerHeight;}rsz();window.addEventListener('resize',rsz);
+for(let i=0;i<55;i++)pts.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.2+.3,vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,c:['rgba(0,212,255,','rgba(123,47,255,','rgba(245,197,24,'][~~(Math.random()*3)],a:Math.random()*.28+.06});
+(function ap(){bgx.clearRect(0,0,bgc.width,bgc.height);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=bgc.width;if(p.x>bgc.width)p.x=0;if(p.y<0)p.y=bgc.height;if(p.y>bgc.height)p.y=0;bgx.beginPath();bgx.arc(p.x,p.y,p.r,0,Math.PI*2);bgx.fillStyle=p.c+p.a+')';bgx.fill();});requestAnimationFrame(ap);})();
+
+/* ══ AUDIO ══ */
+let AC=null;
+function getAC(){if(!AC){try{AC=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended')AC.resume();return AC;}
+document.addEventListener('click',()=>{try{getAC();}catch(e){}},{once:true});
+
+function tone(f,tp,dur,vol=0.28,delay=0){try{const a=getAC();if(!a)return;const o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.type=tp;o.frequency.setValueAtTime(f,a.currentTime+delay);g.gain.setValueAtTime(0.001,a.currentTime+delay);g.gain.linearRampToValueAtTime(vol,a.currentTime+delay+0.01);g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+delay+dur);o.start(a.currentTime+delay);o.stop(a.currentTime+delay+dur+0.05);}catch(e){}}
+function sClick(){tone(1200,'sine',0.06,0.14);tone(800,'sine',0.04,0.08,0.03);}
+function sWrong(){tone(200,'sawtooth',0.3,0.24);tone(120,'sawtooth',0.25,0.19,0.1);tone(80,'triangle',0.4,0.14,0.2);}
+function sLife(){tone(400,'sawtooth',0.12,0.28);tone(300,'sawtooth',0.15,0.26,0.1);tone(200,'sawtooth',0.25,0.23,0.22);tone(100,'sawtooth',0.5,0.19,0.38);}
+function sWin(){[523,659,784,1047,1319].forEach((f,i)=>tone(f,'sine',0.5,0.26,i*0.07));tone(1568,'sine',0.7,0.22,0.65);}
+function sGameOver(){[440,330,247,196,147,110].forEach((f,i)=>tone(f,'sawtooth',0.5,0.26,i*0.18));}
+function sHint(){tone(880,'sine',0.28,0.18);tone(1108,'sine',0.22,0.14,0.15);tone(1318,'sine',0.18,0.11,0.27);}
+function sSuccess(){[400,504,600,800].forEach((f,i)=>tone(f,'sine',0.4,0.22,i*0.06));}
+function sTimerWarn(){tone(880,'square',0.08,0.16);}
+function sFlip(){tone(600,'sine',0.08,0.12);}
+function sMatch(){tone(659,'sine',0.3,0.2);tone(784,'sine',0.25,0.18,0.1);tone(1047,'sine',0.2,0.15,0.2);}
+function sDoor(){tone(300,'sine',0.15,0.2);tone(500,'sine',0.12,0.16,0.1);}
+function sDice(){[300,400,500].forEach((f,i)=>tone(f,'square',0.1,0.12,i*0.04));}
+
+/* Eerie strings for horror/survival */
+let bgInt=null,bgNodes=[];
+function stopBg(){clearInterval(bgInt);bgInt=null;bgNodes.forEach(n=>{try{n.stop(getAC().currentTime+0.4);}catch(e){}});bgNodes=[];}
+function playBg(th){
+  stopBg();try{const a=getAC();if(!a)return;
+  if(th==='treasure'||th==='survival'){
+    const pairs=[[110,146.8],[98,130.8],[116.5,155.6]];let pi=0;
+    const p=()=>{try{pairs[pi%pairs.length].forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.type='triangle';o.frequency.setValueAtTime(f,a.currentTime);o.frequency.linearRampToValueAtTime(f*1.004,a.currentTime+2);g.gain.setValueAtTime(0,a.currentTime);g.gain.linearRampToValueAtTime(0.03,a.currentTime+0.5);g.gain.linearRampToValueAtTime(0,a.currentTime+2.8);o.start();o.stop(a.currentTime+3);bgNodes.push(o);});pi++;}catch(e){}};
+    p();bgInt=setInterval(p,3200);
+  } else if(th==='maze'||th==='doors'){
+    const ns=[523,659,784,659];let ni=0;
+    bgInt=setInterval(()=>{try{tone(ns[ni%ns.length],'sine',0.4,0.05);ni++;}catch(e){}},350);
+  } else if(th==='memory'||th==='target'){
+    const ch=[[220,277,330],[196,247,294]];let ci=0;
+    const p=()=>{try{ch[ci%ch.length].forEach(f=>tone(f,'triangle',1.8,0.03));ci++;}catch(e){}};
+    p();bgInt=setInterval(p,2000);
+  } else if(th==='dice'){
+    const p=()=>{try{tone(220,'sine',1.5,0.04);tone(330,'sine',1.5,0.03,0.5);}catch(e){}};
+    p();bgInt=setInterval(p,2200);
+  } else if(th==='lab'){
+    const notes=[440,494,523,587,659];let li=0;
+    bgInt=setInterval(()=>{try{tone(notes[li%notes.length],'sine',0.3,0.04);li++;}catch(e){}},400);
+  }}catch(e){}}
+
+/* ══ STATE ══ */
+const API='http://localhost:5000';
+const LS='lir_8w';
+let SESSION_ID=null,AUTH_TOKEN=null,CURRENT_USER=null;
+const LOCAL_USERS={},LOCAL_SCORES={};
+const ST={lives:3,hints:1,score:0,cleared:[],levelCleared:{},trUnlocked:[1],trCompleted:[],trFound:0};
+let G={};let timerInt=null;let fpInt=null;
+
+/* ══ QUESTIONS ══ */
+const QS=[
+  {q:"What color is the sky?",opts:["Red","Blue","Green","Yellow"],a:1},
+  {q:"How many legs does a dog have?",opts:["Two","Four","Six","Eight"],a:1},
+  {q:"What is 5 + 3?",opts:["6","7","8","9"],a:2},
+  {q:"Which animal says 'Moo'?",opts:["Cat","Dog","Cow","Duck"],a:2},
+  {q:"Capital of France?",opts:["London","Berlin","Paris","Rome"],a:2},
+  {q:"Days in a week?",opts:["5","6","7","8"],a:2},
+  {q:"Color of a banana?",opts:["Red","Blue","Purple","Yellow"],a:3},
+  {q:"Fingers on one hand?",opts:["4","5","6","10"],a:1},
+  {q:"What do bees make?",opts:["Milk","Honey","Butter","Juice"],a:1},
+  {q:"Our planet is called?",opts:["Mars","Jupiter","Earth","Saturn"],a:2},
+  {q:"What is 10 - 4?",opts:["4","5","6","7"],a:2},
+  {q:"Colors in rainbow?",opts:["5","6","7","8"],a:2},
+  {q:"What is 3 × 4?",opts:["10","11","12","14"],a:2},
+  {q:"Months in a year?",opts:["10","11","12","13"],a:2},
+  {q:"Fish breathe with?",opts:["Lungs","Gills","Skin","Nose"],a:1},
+  {q:"Sides of a triangle?",opts:["2","3","4","5"],a:1},
+  {q:"Hours in a day?",opts:["12","18","24","36"],a:2},
+  {q:"After Wednesday comes?",opts:["Monday","Tuesday","Thursday","Friday"],a:2},
+  {q:"Tallest animal?",opts:["Elephant","Giraffe","Horse","Camel"],a:1},
+  {q:"Wheels on a bicycle?",opts:["1","2","3","4"],a:1},
+  {q:"Color of grass?",opts:["Blue","Red","Green","Yellow"],a:2},
+  {q:"What is 2 × 6?",opts:["10","11","12","14"],a:2},
+  {q:"Legs on a spider?",opts:["6","8","10","12"],a:1},
+  {q:"Biggest ocean?",opts:["Atlantic","Indian","Arctic","Pacific"],a:3},
+  {q:"Sound a cat makes?",opts:["Moo","Woof","Meow","Baa"],a:2},
+];
+
+/* ══ SCREENS ══ */
+function SS(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+/* ══ PERSISTENT LOGIN ══ */
+window.addEventListener('load',()=>{
+  try{
+    const s=JSON.parse(localStorage.getItem(LS)||'null');
+    if(s){
+      if(s.users)Object.assign(LOCAL_USERS,s.users);
+      if(s.scores)Object.assign(LOCAL_SCORES,s.scores);
+      if(s.lastUser){document.getElementById('l-u').value=s.lastUser;document.getElementById('auth-saved').style.display='block';}
+    }
+  }catch(e){}
+});
+
+function saveLocal(){try{localStorage.setItem(LS,JSON.stringify({users:LOCAL_USERS,scores:LOCAL_SCORES,lastUser:CURRENT_USER||''}));}catch(e){}}
+
+/* ══ AUTH ══ */
+function switchTab(t){
+  document.getElementById('tab-l').classList.toggle('active',t==='login');
+  document.getElementById('tab-r').classList.toggle('active',t==='register');
+  document.getElementById('form-l').style.display=t==='login'?'block':'none';
+  document.getElementById('form-r').style.display=t==='register'?'block':'none';
+  sClick();
+}
+async function doLogin(){
+  sClick();
+  const u=document.getElementById('l-u').value.trim(),p=document.getElementById('l-p').value.trim();
+  const msg=document.getElementById('msg-l');
+  if(!u||!p){msg.className='auth-msg err';msg.textContent='Enter username and password.';return;}
+  let ok=false;
+  try{const r=await fetch(`${API}/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p}),signal:AbortSignal.timeout(3000)});const d=await r.json();if(d.token){AUTH_TOKEN=d.token;ok=true;}else{msg.className='auth-msg err';msg.textContent='Wrong credentials.';return;}}
+  catch{if(LOCAL_USERS[u]===p){AUTH_TOKEN='offline';ok=true;}else if(LOCAL_USERS[u]){msg.className='auth-msg err';msg.textContent='Wrong password.';return;}else{msg.className='auth-msg err';msg.textContent='Not found — register first.';return;}}
+  if(ok){CURRENT_USER=u;saveLocal();msg.className='auth-msg ok';msg.textContent='✓ Welcome back!';setTimeout(enterHero,600);}
+}
+async function doRegister(){
+  sClick();
+  const u=document.getElementById('r-u').value.trim(),p=document.getElementById('r-p').value.trim();
+  const msg=document.getElementById('msg-r');
+  if(!u||!p){msg.className='auth-msg err';msg.textContent='Fill all fields.';return;}
+  if(p.length<4){msg.className='auth-msg err';msg.textContent='Password needs 4+ chars.';return;}
+  LOCAL_USERS[u]=p;saveLocal();
+  try{await fetch(`${API}/register`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p}),signal:AbortSignal.timeout(3000)});const lr=await fetch(`${API}/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});const ld=await lr.json();if(ld.token)AUTH_TOKEN=ld.token;}catch{AUTH_TOKEN='offline';}
+  CURRENT_USER=u;saveLocal();msg.className='auth-msg ok';msg.textContent='✓ Account saved!';setTimeout(enterHero,700);
+}
+function guestPlay(){sClick();CURRENT_USER=null;AUTH_TOKEN=null;enterHero();}
+function enterHero(){
+  const lbl=CURRENT_USER?`👤 ${CURRENT_USER}`:'👤 Guest';
+  document.getElementById('hero-lbl').textContent=lbl;
+  document.getElementById('hero-lbl').style.color=CURRENT_USER?'#39ff14':'rgba(255,255,255,.3)';
+  SS('sh');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('s-auth').classList.contains('active')){if(document.getElementById('form-l').style.display!=='none')doLogin();else doRegister();}});
+
+/* ══ LOADING ══ */
+const LMSGS=['Calibrating qubits...','Loading Treasure Hunt...','Building Quantum Maze...','Spawning targets...','Shuffling memory cards...','Rolling quantum dice...','Summoning ghosts...','Opening quantum doors...','Preparing lab...','Realm ready!'];
+function startLoading(){
+  sClick();SS('sl');let pct=0,mi=0;
+  const pf=document.getElementById('pf'),pe=document.getElementById('pct'),ls=document.getElementById('ls');
+  const iv=setInterval(()=>{pct+=Math.random()*2.8+.7;if(pct>100)pct=100;pf.style.width=pct+'%';pe.textContent=~~pct+'%';
+    const tm=~~(pct/(100/LMSGS.length));if(tm>mi){ls.style.opacity=0;setTimeout(()=>{ls.textContent=LMSGS[Math.min(mi,LMSGS.length-1)];ls.style.opacity=1;ls.style.transition='opacity .3s';mi++;},170);tone(400+mi*55,'sine',0.1,0.09);}
+    if(pct>=100){clearInterval(iv);setTimeout(()=>{buildHub();SS('s-hub');loadLeaderboard();},600);}},50);
+}
+
+/* ══ LEADERBOARD ══ */
+async function loadLeaderboard(){
+  const panel=document.getElementById('mlbr');
+  try{const r=await fetch(`${API}/leaderboard`,{signal:AbortSignal.timeout(2000)});const data=await r.json();
+    if(data&&data.length){document.getElementById('mlb').style.display='block';panel.innerHTML=data.slice(0,5).map(([n,s],i)=>`<div class="mlbrow">${['🥇','🥈','🥉','4.','5.'][i]} <strong>${n}</strong> — ${s}</div>`).join('');return;}}catch{}
+  const ent=Object.entries(LOCAL_SCORES).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(ent.length){document.getElementById('mlb').style.display='block';panel.innerHTML=ent.map(([n,s],i)=>`<div class="mlbrow">${['🥇','🥈','🥉','4.','5.'][i]} <strong>${n}</strong> — ${s}</div>`).join('');}
+}
+async function fetchLeaderboard(){
+  sClick();
+  let rows='';
+  try{const r=await fetch(`${API}/leaderboard`,{signal:AbortSignal.timeout(3000)});const data=await r.json();rows=data.slice(0,10).map(([n,s],i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(0,212,255,.08);font-size:.66rem;"><span style="color:${i===0?'#f5c518':i===1?'#aaa':i===2?'#cd7f32':'rgba(255,255,255,.4)'}">${['🥇','🥈','🥉'][i]||'#'+(i+1)} ${n}</span><span style="font-family:'Cinzel',serif;color:var(--qb)">${s}</span></div>`).join('');}
+  catch{const ent=Object.entries(LOCAL_SCORES).sort((a,b)=>b[1]-a[1]).slice(0,10);rows=ent.map(([n,s],i)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(0,212,255,.08);font-size:.66rem;"><span style="color:${i===0?'#f5c518':i===1?'#aaa':i===2?'#cd7f32':'rgba(255,255,255,.4)'}">${['🥇','🥈','🥉'][i]||'#'+(i+1)} ${n}</span><span style="font-family:'Cinzel',serif;color:var(--qb)">${s}</span></div>`).join('');}
+  showModal('🏆','<span style="color:var(--qb)">Leaderboard</span>',rows||'<em style="color:rgba(255,255,255,.3)">No scores yet!</em>','mb2-q',[{t:'Close',c:'ms',fn:closeMo}]);
+}
+async function saveScore(){
+  if(!CURRENT_USER)return;
+  LOCAL_SCORES[CURRENT_USER]=Math.max(ST.score,LOCAL_SCORES[CURRENT_USER]||0);saveLocal();
+  if(AUTH_TOKEN&&AUTH_TOKEN!=='offline'){try{await fetch(`${API}/score`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${AUTH_TOKEN}`},body:JSON.stringify({score:ST.score}),signal:AbortSignal.timeout(3000)});}catch{}}
+  loadLeaderboard();
+}
+
+/* ══ WORLD DEFINITIONS ══ */
+const WORLDS=[
+  {id:1,name:'Quantum Treasure Hunt',sub:'Diamond Hunt',desc:'Find hidden 💎 diamonds! Grid grows each level. 1 wrong click = 1 life lost.',icon:'💎',cls:'wc1',bg:'bg-treasure',col:'#e74c3c',hint:'Diamonds hide where quantum superposition collapses — scan systematically.',levels:10,type:'treasure'},
+  {id:2,name:'Quantum Maze Escape',sub:'Maze World',desc:'Navigate quantum mazes in 60s! No lives lost — just escape before time runs out.',icon:'🧩',cls:'wc2',bg:'bg-maze',col:'#00d4ff',hint:'Stay near edges — quantum paths branch from |+⟩ state at corners.',levels:8,type:'maze'},
+  {id:3,name:'Quantum Target Shooting',sub:'Target World',desc:'Fast! 30s to shoot the REAL target. Fakes are superposition — only 1 is real!',icon:'🎯',cls:'wc3',bg:'bg-target',col:'#39ff14',hint:'Real target has constructive interference — it holds position longer.',levels:10,type:'target'},
+  {id:4,name:'Quantum Memory Game',sub:'Memory World',desc:'Flip & match quantum card pairs. L1-2 gives a preview. Higher levels add chaos!',icon:'🃏',cls:'wc4',bg:'bg-memory',col:'#ff6eb4',hint:'Match collapses the Bell state — pairs resonate at same frequency.',levels:8,type:'memory'},
+  {id:5,name:'Quantum Dice Strategy',sub:'Dice World',desc:'Roll quantum dice! Hit the exact target sum. Timer gets shorter each level!',icon:'🎲',cls:'wc5',bg:'bg-dice',col:'#ffc107',hint:'Quantum dice follow Born rule — mid-range sums are most probable.',levels:8,type:'dice'},
+  {id:6,name:'Quantum Survival',sub:'Survival World',desc:'Survive as quantum ghosts hunt you! Starts with 1 life — gets harder fast!',icon:'👻',cls:'wc6',bg:'bg-survival',col:'#ff9300',hint:'Ghosts chase probabilistically — move to edges to confuse them.',levels:8,type:'survival'},
+  {id:7,name:'Quantum Doors Puzzle',sub:'Doors World',desc:'Choose the right quantum door! Wrong doors are traps. More doors each level.',icon:'🚪',cls:'wc7',bg:'bg-doors',col:'#64c8ff',hint:'The |1⟩ eigenstate door resonates — listen to the quantum field.',levels:10,type:'doors'},
+  {id:8,name:'Quantum Lab Puzzle',sub:'Lab World',desc:'Set qubit variables to match eigenstate targets. Gets VERY hard — multiplication at L5!',icon:'🧪',cls:'wc8',bg:'bg-lab',col:'#c864ff',hint:'Try balanced values first — eigenstate is often near the midpoint.',levels:8,type:'lab'},
+];
+
+/* ══ BUILD HUB ══ */
+function buildHub(){
+  const g=document.getElementById('worlds-grid');g.innerHTML='';
+  document.getElementById('hub-lbl').textContent=CURRENT_USER?`👤 ${CURRENT_USER}`:'👤 Guest';
+  document.getElementById('hub-u').textContent=CURRENT_USER||'Guest';
+  document.getElementById('hub-score').textContent=ST.score;
+  document.getElementById('hub-cleared').textContent=`${ST.cleared.length}/8`;
+  updateHUDHearts();
+  WORLDS.forEach(w=>{
+    const done=ST.cleared.includes(w.id);
+    const d=document.createElement('div');d.className=`wcard ${w.cls}`;
+    d.onclick=()=>{sClick();enterWorld(w.id);};
+    const lvlDone=(ST.levelCleared&&ST.levelCleared[w.id])||[];
+    const lvlPct=Math.round(lvlDone.length/w.levels*100);
+    d.innerHTML=`<div class="wcbg"></div><div class="wcico">${w.icon}</div>
+      ${done?'<div style="position:absolute;top:9px;left:9px;z-index:4;background:rgba(57,255,20,.16);border:1px solid rgba(57,255,20,.45);border-radius:30px;padding:2px 8px;font-size:.44rem;letter-spacing:2px;text-transform:uppercase;color:#39ff14;font-weight:700;">✓ ${lvlDone.length}/${w.levels}</div>':''}
+      <div class="wcb">
+        <div class="wcbdg">${w.sub}</div>
+        <div class="wcname">${w.name}</div>
+        <div class="wcdesc">${w.desc}</div>
+        ${lvlDone.length>0&&!done?`<div style="height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-bottom:7px;"><div style="height:100%;width:${lvlPct}%;background:${w.col};border-radius:2px;transition:width .4s;"></div></div><div style="font-size:.42rem;color:rgba(255,255,255,.3);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;">Lvl ${lvlDone.length}/${w.levels} complete</div>`:''}
+        <button class="wcenter">${done?'Play Again ✓':'Enter World'}</button>
+      </div>`;
+    g.appendChild(d);
+  });
+  // ── Generate New World button ──
+  const gb=document.createElement('div');
+  gb.className='wcard wc1';
+  gb.style.cssText='min-height:170px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;border:1px dashed rgba(0,212,255,.25);background:rgba(0,212,255,.03);cursor:none;transition:all .25s;';
+  gb.innerHTML=`<div style="font-size:1.8rem;animation:spin 5s linear infinite">⚛️</div><div style="font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:3px;color:rgba(0,212,255,.6);text-transform:uppercase;">Generate New World</div><div style="font-size:.4rem;color:rgba(255,255,255,.28);letter-spacing:2px;text-transform:uppercase;">Quantum Randomness</div>`;
+  gb.onmouseenter=()=>{gb.style.borderColor='rgba(0,212,255,.5)';gb.style.background='rgba(0,212,255,.06)';};
+  gb.onmouseleave=()=>{gb.style.borderColor='rgba(0,212,255,.25)';gb.style.background='rgba(0,212,255,.03)';};
+  gb.onclick=()=>{sClick();generateAndAddWorld();};
+  g.appendChild(gb);
+}
+function generateAndAddWorld(){
+  const types=['maze','target','memory','dice','survival','doors','lab'];
+  const type=types[~~(qRNG2()*types.length)];
+  const baseW=WORLDS.find(x=>x.type===type)||WORLDS[1];
+  const newId=WORLDS.length+1;
+  const suffixes=['α','β','γ','Ω','Δ','Σ','Ξ'];
+  const suf=suffixes[~~(qRNG2()*suffixes.length)];
+  const newW={...baseW,id:newId,
+    name:baseW.name+' '+suf,
+    sub:baseW.sub+' '+suf,
+    levels:6+~~(qRNG2()*6),
+    // randomise colour slightly
+    col:['#ff4d6d','#7209b7','#3a0ca3','#4361ee','#4cc9f0','#06d6a0','#ffd60a','#ff9f1c','#c864ff','#e74c3c'][~~(qRNG2()*10)],
+  };
+  WORLDS.push(newW);
+  genWorldRealms(newW,newW.levels);
+  buildHub();
+  toast(`<strong>⚛️ ${newW.name}</strong> generated via quantum randomness!`);
+  confetti(40);
+}
+function updateHUDHearts(){['hr1','hr2','hr3'].forEach((id,i)=>{const el=document.getElementById(id);if(el){el.textContent=i<ST.lives?'❤️':'🖤';el.className=i<ST.lives?'hrt':'hrt lost';}});}
+
+/* ══ ENTER WORLD — show level select ══ */
+function enterWorld(wid){
+  const w=WORLDS.find(x=>x.id===wid);
+  if(w.type==='treasure'){
+    // World 1 uses the full index-16 treasure level select
+    openTreasureSelect();
+  } else {
+    showLevelSelect(w);
+  }
+}
+
+function showLevelSelect(w){
+  document.getElementById('lvl-lbl').textContent=CURRENT_USER?`👤 ${CURRENT_USER}`:'👤 Guest';
+  document.getElementById('lvl-world-name').innerHTML=`<span style="color:${w.col}">${w.icon} ${w.name}</span>`;
+  document.getElementById('lvl-world-sub').textContent=w.sub+' · Choose Your Realm';
+  const grid=document.getElementById('lvl-grid');grid.innerHTML='';
+  const cleared=ST.levelCleared||{};
+  const realms=WORLD_LVS[w.id]||[];
+  const clearedLvs=cleared[w.id]||[];
+  const maxCleared=clearedLvs.length>0?Math.max(...clearedLvs):0;
+
+  realms.forEach(realm=>{
+    const lv=realm.lv;
+    const isCleared=clearedLvs.includes(lv);
+    const isUnlocked=lv===1||lv<=maxCleared+1;
+    const diffColor=lv<=3?'#39ff14':lv<=6?'#ffc107':lv<=9?'#ff9300':'#ff4757';
+
+    // Use the same .lcard system as treasure world
+    const d=document.createElement('div');
+    d.className=`lcard ${realm.cc}${!isUnlocked?' locked':''}`;
+    d.innerHTML=`<div class="lcbg"></div><div class="lce">${realm.cem}</div>
+      ${isCleared?'<div class="cbdg">✓ Clear</div>':''}
+      <div class="lcb">
+        <div class="lcbdg">${realm.realm}</div>
+        <div class="lcn2">${realm.diff.toUpperCase()}</div>
+        <div class="lcname">${realm.nm}</div>
+        <div class="lcst" style="color:${realm.col}88">${w.icon} ${w.sub} · ${realm.diff}</div>
+        <button class="lcent"${!isUnlocked?' disabled':''}>${isCleared?'Replay':'Enter'}</button>
+      </div>
+      ${!isUnlocked?`<div class="lclk"><div class="lclki">🔒</div><div class="lclkt">Clear Realm ${lv-1}</div></div>`:''}`;
+    if(isUnlocked) d.onclick=()=>{sClick();launchWorldLevel(w,lv,realm);};
+    grid.appendChild(d);
+  });
+
+  // Generate more realms button
+  const more=document.createElement('div');
+  more.style.cssText='display:flex;align-items:center;justify-content:center;min-height:160px;border:1px dashed rgba(255,255,255,.15);border-radius:11px;cursor:none;transition:all .25s;flex-direction:column;gap:6px;background:rgba(255,255,255,.02);';
+  more.innerHTML=`<div style="font-size:1.3rem;animation:spin 4s linear infinite">⚛️</div><div style="font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:3px;color:${w.col}88;text-transform:uppercase">Generate 4 More Realms</div><div style="font-size:.4rem;color:rgba(255,255,255,.25);letter-spacing:2px;text-transform:uppercase;">Quantum Randomness</div>`;
+  more.onmouseenter=()=>{more.style.borderColor=`${w.col}55`;more.style.background=`${w.col}08`;};
+  more.onmouseleave=()=>{more.style.borderColor='rgba(255,255,255,.15)';more.style.background='rgba(255,255,255,.02)';};
+  more.onclick=()=>{
+    sClick();
+    w.levels+=4;
+    genWorldRealms(w, w.levels);
+    showLevelSelect(w);
+    toast(`<strong>⚛️ 4 new realms generated!</strong> ${w.name} expanded!`);
+    confetti(30);
+  };
+  grid.appendChild(more);
+  SS('s-levels');
+}
+
+function launchWorldLevel(w,lv,realm){
+  // realm optional — use realm theme if provided
+  const rm=realm||(WORLD_LVS[w.id]||[])[lv-1]||null;
+  const usedCol=rm?rm.col:w.col;
+  const usedBg=rm?rm.bg:w.bg;
+  G={world:w,level:lv,realm:rm,done:false,quizUsed:false};
+  ST.lives=3;ST.hints=1;
+  const gs=document.getElementById('sg');
+  gs.className=`screen gscreen ${usedBg}`;
+  setCC(usedCol);
+  const title=rm?`<span class="${rm.tcls}">${rm.ico} ${rm.nm}</span>`:`<span style="color:${w.col};text-shadow:0 0 15px ${w.col}">${w.icon} ${w.name}</span>`;
+  document.getElementById('gtbt').innerHTML=title;
+  document.getElementById('hbtn').style.display='';document.getElementById('qzbtn').style.display='';
+  document.getElementById('hbtn').style.cssText=`background:rgba(255,255,255,.07);border-color:${usedCol}40;color:${usedCol};font-size:.44rem;letter-spacing:2px;`;
+  updateGameHUD();
+  spawnWorldBgFx(w);
+  playBg(w.type);
+  startWorldLevel(w,lv);
+  SS('sg');
+}
+
+function spawnWorldBgFx(w){
+  // Clear old fx
+  document.querySelectorAll('.dice-float,.ghost-float').forEach(e=>e.remove());
+  if(w.type==='dice'){
+    const faces=['⚀','⚁','⚂','⚃','⚄','⚅','🎲'];
+    for(let i=0;i<8;i++){
+      const el=document.createElement('div');el.className='dice-float';
+      el.textContent=faces[~~(Math.random()*faces.length)];
+      el.style.cssText=`left:${Math.random()*100}vw;animation-duration:${5+Math.random()*8}s;animation-delay:${Math.random()*6}s;`;
+      document.body.appendChild(el);
+    }
+  }
+  if(w.type==='survival'){
+    for(let i=0;i<6;i++){
+      const el=document.createElement('div');el.className='ghost-float';
+      el.textContent='👻';
+      el.style.cssText=`top:${10+Math.random()*70}vh;animation-duration:${8+Math.random()*10}s;animation-delay:${Math.random()*8}s;`;
+      document.body.appendChild(el);
+    }
+  }
+}
+
+function updateGameHUD(){
+  let h='';for(let i=0;i<3;i++)h+=`<span class="${i<ST.lives?'hrt':'hrt lost'}">${i<ST.lives?'❤️':'🖤'}</span>`;
+  document.getElementById('gh').innerHTML=h;
+  document.getElementById('gsc').textContent=ST.score;
+  document.getElementById('ghi').textContent=ST.hints;
+}
+
+/* ══ START LEVEL BY WORLD TYPE ══ */
+function startWorldLevel(w,lv){
+  G.level=lv;G.quizUsed=false;ST.hints=1;
+  const rm=G.realm||(WORLD_LVS[w.id]||[])[lv-1]||null;
+  const realmLabel=rm?rm.realm:`Realm ${lv}`;
+  document.getElementById('lsub').textContent=`${w.icon} ${w.sub} · ${realmLabel}`;
+  document.getElementById('ltit').innerHTML=rm?`<span class="${rm.tcls}">${rm.ico} ${rm.nm}</span>`:`<span style="color:${w.col}">${w.name}</span>`;
+  stopTimer();
+  if(w.type==='treasure'){startTreasure(w,lv);return;}
+  else if(w.type==='maze')startMaze(w,lv);
+  else if(w.type==='target')startTarget(w,lv);
+  else if(w.type==='memory')startMemory(w,lv);
+  else if(w.type==='dice')startDice(w,lv);
+  else if(w.type==='survival')startSurvival(w,lv);
+  else if(w.type==='doors')startDoors(w,lv);
+  else if(w.type==='lab')startLab(w,lv);
+}
+
+/* ═══════════════════════════════════════════════════════
+   WORLD 1 — TREASURE HUNT  (full index-16 system)
+   8 themes: Haunted Qubit, Enchanted Entanglement, etc.
+═══════════════════════════════════════════════════════ */
+
+// ── INDEX-16 THEME PROFILES ──
+const TP=[
+  {th:'horror',nm:'The Haunted Qubit',tcls:'tx-h',bcls:'bh',fbcls:'fbf-h',hbcls:'hb-h',mcls:'mb2-q',mpcls:'mp-r',bgcls:'t-horror',cc:'ch',col:'#e74c3c',ico:'💀',cem:'💀',win:'Haunted qubit purged!'},
+  {th:'disney',nm:'Enchanted Entanglement',tcls:'tx-d',bcls:'bd',fbcls:'fbf-d',hbcls:'hb-d',mcls:'mb2-q',mpcls:'mp-q',bgcls:'t-disney',cc:'cd',col:'#ff6eb4',ico:'✨',cem:'✨',win:'Enchantment complete!'},
+  {th:'quantum',nm:'The Void Circuit',tcls:'tx-q',bcls:'bq',fbcls:'fbf-q',hbcls:'hb-q',mcls:'mb2-q',mpcls:'mp-q',bgcls:'t-quantum',cc:'cq',col:'#00fff2',ico:'⚛️',cem:'⚛️',win:'Circuit decoded!'},
+  {th:'mythic',nm:'The Mythic Gate',tcls:'tx-m',bcls:'bm',fbcls:'fbf-m',hbcls:'hb-m',mcls:'mb2-q',mpcls:'mp-q',bgcls:'t-mythic',cc:'cm',col:'#ffc107',ico:'👑',cem:'🏆',win:'Mythic gate opened!'},
+  {th:'neon',nm:'Neon Singularity',tcls:'tx-n',bcls:'bn',fbcls:'fbf-n',hbcls:'hb-n',mcls:'mb2-q',mpcls:'mp-q',bgcls:'t-neon',cc:'cn',col:'#39ff14',ico:'🌿',cem:'🌿',win:'Singularity collapsed!'},
+  {th:'cosmic',nm:'Cosmic Collapse',tcls:'tx-c',bcls:'bco',fbcls:'fbf-c',hbcls:'hb-c',mcls:'mb2-q',mpcls:'mp-q',bgcls:'t-cosmic',cc:'cc',col:'#ff9300',ico:'🌌',cem:'🌌',win:'Star system stabilized!'},
+  {th:'glacier',nm:'Glacier Protocol',tcls:'tx-g',bcls:'bg2',fbcls:'fbf-g',hbcls:'hb-g',mcls:'mb2-q',mpcls:'mp-q',bgcls:'t-glacier',cc:'cg2',col:'#64c8ff',ico:'🧊',cem:'🧊',win:'Protocol complete!'},
+  {th:'abyss',nm:'The Quantum Abyss',tcls:'tx-a',bcls:'ba',fbcls:'fbf-a',hbcls:'hb-a',mcls:'mb2-q',mpcls:'mp-q',bgcls:'t-abyss',cc:'ca',col:'#c864ff',ico:'🕳️',cem:'🕳️',win:'Abyss traversed!'},
+];
+const WN={
+  horror:['Cursed Circuit','Dark Entanglement','Spectral Gate','Void Collapse'],
+  disney:['Fairy Bell State','Stardust Qubit','Magic Superposition','Wish Gate'],
+  quantum:['Null Eigenstate','Zero Point','Phase Collapse','Dark Measurement'],
+  mythic:['Golden Eigenstate','Eternal Qubit','Omega Circuit','Infinite Gate'],
+  neon:['Pulse Matrix','Glow Circuit','Flash Node','Neon Gate'],
+  cosmic:['Nova Circuit','Pulsar Gate','Nebula Qubit','Star Collapse'],
+  glacier:['Cryo Circuit','Frost Gate','Zero Kelvin','Ice Qubit'],
+  abyss:['Dark Void','Null Space','Anti Gate','Entropy Field'],
+};
+const ORD=['I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI','XXII','XXIII','XXIV','XXV'];
+
+/* ══ PER-WORLD REALM DEFINITIONS ══ */
+const WORLD_REALMS = {
+  maze:{
+    themes:[
+      {nm:'The Labyrinth of Collapse',col:'#00d4ff',bg:'bg-maze',tcls:'tx-q',cc:'cq',ico:'🧩',cem:'🧩'},
+      {nm:'Spectral Corridors',col:'#7b2fff',bg:'bg-maze',tcls:'tx-a',cc:'ca',ico:'👁️',cem:'👁️'},
+      {nm:'The Quantum Drift',col:'#00fff2',bg:'bg-maze',tcls:'tx-q',cc:'cq',ico:'🌀',cem:'🌀'},
+      {nm:'Phase Maze Protocol',col:'#64c8ff',bg:'bg-maze',tcls:'tx-g',cc:'cg2',ico:'❄️',cem:'❄️'},
+      {nm:'Void Pathway',col:'#c864ff',bg:'bg-maze',tcls:'tx-a',cc:'ca',ico:'🕳️',cem:'🕳️'},
+      {nm:'Neon Labyrinth',col:'#39ff14',bg:'bg-maze',tcls:'tx-n',cc:'cn',ico:'◈',cem:'◈'},
+      {nm:'Cosmic Tunnel',col:'#ff9300',bg:'bg-maze',tcls:'tx-c',cc:'cc',ico:'🌌',cem:'🌌'},
+      {nm:'Mythic Pathfinder',col:'#ffc107',bg:'bg-maze',tcls:'tx-m',cc:'cm',ico:'⚜️',cem:'⚜️'},
+    ],
+    subNames:['Maze','Maze','Maze','Maze','Maze','Maze','Maze','Maze'],
+  },
+  target:{
+    themes:[
+      {nm:'Phantom Strikes',col:'#8b0000',bg:'bg-target',tcls:'tx-h',cc:'ch',ico:'🎯',cem:'💀'},
+      {nm:'Blood Circuit',col:'#c0392b',bg:'bg-target',tcls:'tx-h',cc:'ch',ico:'🩸',cem:'🩸'},
+      {nm:'Crimson Collapse',col:'#922b21',bg:'bg-target',tcls:'tx-h',cc:'ch',ico:'☠️',cem:'☠️'},
+      {nm:'Spectral Targets',col:'#884ea0',bg:'bg-target',tcls:'tx-a',cc:'ca',ico:'👻',cem:'👻'},
+      {nm:'Void Shootout',col:'#6c3483',bg:'bg-target',tcls:'tx-a',cc:'ca',ico:'🕳️',cem:'🕳️'},
+      {nm:'Dark Matter Strike',col:'#7d3c98',bg:'bg-target',tcls:'tx-a',cc:'ca',ico:'🌑',cem:'🌑'},
+      {nm:'Nether Barrage',col:'#6e2f1a',bg:'bg-target',tcls:'tx-h',cc:'ch',ico:'💥',cem:'💥'},
+      {nm:'Obsidian Hunt',col:'#784212',bg:'bg-target',tcls:'tx-c',cc:'cc',ico:'🖤',cem:'🖤'},
+      {nm:'Infernal Circuit',col:'#b03a2e',bg:'bg-target',tcls:'tx-h',cc:'ch',ico:'🔥',cem:'🔥'},
+      {nm:'Quantum Wraith',col:'#76448a',bg:'bg-target',tcls:'tx-a',cc:'ca',ico:'⚡',cem:'⚡'},
+    ],
+    subNames:['Target','Target','Target','Target','Target','Target','Target','Target','Target','Target'],
+  },
+  memory:{
+    themes:[
+      {nm:'Fairy Bell State',col:'#ff6eb4',bg:'bg-memory',tcls:'tx-d',cc:'cd',ico:'🃏',cem:'✨'},
+      {nm:'Stardust Recall',col:'#f48fb1',bg:'bg-memory',tcls:'tx-d',cc:'cd',ico:'💫',cem:'💫'},
+      {nm:'Enchanted Pairs',col:'#ce93d8',bg:'bg-memory',tcls:'tx-a',cc:'ca',ico:'🔮',cem:'🔮'},
+      {nm:'Quantum Mnemonics',col:'#00fff2',bg:'bg-memory',tcls:'tx-q',cc:'cq',ico:'🧠',cem:'🧠'},
+      {nm:'Bell State Memory',col:'#7b2fff',bg:'bg-memory',tcls:'tx-a',cc:'ca',ico:'⚛️',cem:'⚛️'},
+      {nm:'Mythic Recall',col:'#ffc107',bg:'bg-memory',tcls:'tx-m',cc:'cm',ico:'👑',cem:'🏆'},
+      {nm:'Void Impressions',col:'#c864ff',bg:'bg-memory',tcls:'tx-a',cc:'ca',ico:'🕳️',cem:'🕳️'},
+      {nm:'Cosmic Archive',col:'#ff9300',bg:'bg-memory',tcls:'tx-c',cc:'cc',ico:'🌌',cem:'🌌'},
+    ],
+    subNames:['Memory','Memory','Memory','Memory','Memory','Memory','Memory','Memory'],
+  },
+  dice:{
+    themes:[
+      {nm:'Quantum Oracle',col:'#ffc107',bg:'bg-dice',tcls:'tx-m',cc:'cm',ico:'🎲',cem:'🎲'},
+      {nm:'Golden Eigenroll',col:'#f5c518',bg:'bg-dice',tcls:'tx-m',cc:'cm',ico:'🎰',cem:'🎰'},
+      {nm:'Mythic Fate Dice',col:'#ff9300',bg:'bg-dice',tcls:'tx-c',cc:'cc',ico:'⚡',cem:'⚡'},
+      {nm:'Cosmic Probability',col:'#e67e22',bg:'bg-dice',tcls:'tx-c',cc:'cc',ico:'🌌',cem:'🌌'},
+      {nm:'Neon Luck Circuit',col:'#39ff14',bg:'bg-dice',tcls:'tx-n',cc:'cn',ico:'◈',cem:'◈'},
+      {nm:'Spectral Roll',col:'#c864ff',bg:'bg-dice',tcls:'tx-a',cc:'ca',ico:'👻',cem:'👻'},
+      {nm:'Void Probability',col:'#884ea0',bg:'bg-dice',tcls:'tx-a',cc:'ca',ico:'🕳️',cem:'🕳️'},
+      {nm:'Glacial Odds',col:'#64c8ff',bg:'bg-dice',tcls:'tx-g',cc:'cg2',ico:'❄️',cem:'❄️'},
+    ],
+    subNames:['Dice','Dice','Dice','Dice','Dice','Dice','Dice','Dice'],
+  },
+  survival:{
+    themes:[
+      {nm:'Ghost Emergence',col:'#ff9300',bg:'bg-survival',tcls:'tx-c',cc:'cc',ico:'👻',cem:'👻'},
+      {nm:'Specter Storm',col:'#e67e22',bg:'bg-survival',tcls:'tx-c',cc:'cc',ico:'🌀',cem:'🌀'},
+      {nm:'Phantom Siege',col:'#d35400',bg:'bg-survival',tcls:'tx-c',cc:'cc',ico:'💀',cem:'💀'},
+      {nm:'Haunted Dimension',col:'#c0392b',bg:'bg-survival',tcls:'tx-h',cc:'ch',ico:'☠️',cem:'☠️'},
+      {nm:'Void Pursuit',col:'#8e44ad',bg:'bg-survival',tcls:'tx-a',cc:'ca',ico:'🕳️',cem:'🕳️'},
+      {nm:'Spectral Overload',col:'#c864ff',bg:'bg-survival',tcls:'tx-a',cc:'ca',ico:'⚡',cem:'⚡'},
+      {nm:'Neon Ghost Grid',col:'#39ff14',bg:'bg-survival',tcls:'tx-n',cc:'cn',ico:'◈',cem:'◈'},
+      {nm:'Wraith Convergence',col:'#922b21',bg:'bg-survival',tcls:'tx-h',cc:'ch',ico:'🌑',cem:'🌑'},
+    ],
+    subNames:['Survival','Survival','Survival','Survival','Survival','Survival','Survival','Survival'],
+  },
+  doors:{
+    themes:[
+      {nm:'The Eigenstate Gate',col:'#64c8ff',bg:'bg-doors',tcls:'tx-g',cc:'cg2',ico:'🚪',cem:'🚪'},
+      {nm:'Quantum Portal',col:'#00d4ff',bg:'bg-doors',tcls:'tx-q',cc:'cq',ico:'🔮',cem:'🔮'},
+      {nm:'Spectral Threshold',col:'#7b2fff',bg:'bg-doors',tcls:'tx-a',cc:'ca',ico:'👁️',cem:'👁️'},
+      {nm:'The Void Passage',col:'#c864ff',bg:'bg-doors',tcls:'tx-a',cc:'ca',ico:'🕳️',cem:'🕳️'},
+      {nm:'Mythic Archway',col:'#ffc107',bg:'bg-doors',tcls:'tx-m',cc:'cm',ico:'⚜️',cem:'⚜️'},
+      {nm:'Neon Door Matrix',col:'#39ff14',bg:'bg-doors',tcls:'tx-n',cc:'cn',ico:'◈',cem:'◈'},
+      {nm:'Cosmic Gateway',col:'#ff9300',bg:'bg-doors',tcls:'tx-c',cc:'cc',ico:'🌌',cem:'🌌'},
+      {nm:'Haunted Threshold',col:'#e74c3c',bg:'bg-doors',tcls:'tx-h',cc:'ch',ico:'💀',cem:'💀'},
+      {nm:'Cryo Portal',col:'#64c8ff',bg:'bg-doors',tcls:'tx-g',cc:'cg2',ico:'❄️',cem:'❄️'},
+      {nm:'Phase Doorway',col:'#00fff2',bg:'bg-doors',tcls:'tx-q',cc:'cq',ico:'⚛️',cem:'⚛️'},
+    ],
+    subNames:['Doors','Doors','Doors','Doors','Doors','Doors','Doors','Doors','Doors','Doors'],
+  },
+  lab:{
+    themes:[
+      {nm:'The Eigenstate Lab',col:'#c864ff',bg:'bg-lab',tcls:'tx-a',cc:'ca',ico:'🧪',cem:'🧪'},
+      {nm:'Quantum Variables',col:'#9b59b6',bg:'bg-lab',tcls:'tx-a',cc:'ca',ico:'⚗️',cem:'⚗️'},
+      {nm:'Void Equations',col:'#7d3c98',bg:'bg-lab',tcls:'tx-a',cc:'ca',ico:'🔬',cem:'🔬'},
+      {nm:'Spectral Formula',col:'#8e44ad',bg:'bg-lab',tcls:'tx-a',cc:'ca',ico:'💊',cem:'💊'},
+      {nm:'Mythic Synthesis',col:'#ffc107',bg:'bg-lab',tcls:'tx-m',cc:'cm',ico:'⚡',cem:'⚡'},
+      {nm:'Cosmic Lab Omega',col:'#ff9300',bg:'bg-lab',tcls:'tx-c',cc:'cc',ico:'🌌',cem:'🌌'},
+      {nm:'Neon Equation',col:'#39ff14',bg:'bg-lab',tcls:'tx-n',cc:'cn',ico:'◈',cem:'◈'},
+      {nm:'Cryo Formula',col:'#64c8ff',bg:'bg-lab',tcls:'tx-g',cc:'cg2',ico:'❄️',cem:'❄️'},
+    ],
+    subNames:['Lab','Lab','Lab','Lab','Lab','Lab','Lab','Lab'],
+  },
+};
+
+// Per-world generated realm levels (like LVS for treasure)
+const WORLD_LVS = {}; // wid -> array of realm objects
+let _ws2=Date.now()&0xffffffff;
+function qRNG2(){_ws2=(Math.imul(1664525,_ws2)+1013904223)>>>0;return _ws2/0x100000000;}
+
+function genWorldRealms(w, n) {
+  const def = WORLD_REALMS[w.type];
+  if(!def) return;
+  const themes = def.themes;
+  const arr = [];
+  for(let i=0;i<n;i++){
+    const tp = themes[i % themes.length];
+    const isFirst4 = i<4;
+    arr.push({
+      id: i+1,
+      wid: w.id,
+      nm: tp.nm + (i>=themes.length?' '+['α','β','γ','δ','Ω'][~~(qRNG2()*5)]:''),
+      realm: `Realm ${ORD[i]||String(i+1)}`,
+      th: w.type,
+      ico: tp.ico, cem: tp.cem,
+      tcls: tp.tcls, cc: tp.cc, col: tp.col,
+      bg: tp.bg,
+      lv: i+1,
+      diff: i<3?'Easy':i<6?'Medium':i<9?'Hard':'Expert',
+    });
+  }
+  WORLD_LVS[w.id] = arr;
+}
+
+// Initialize realm levels for all non-treasure worlds
+function initAllWorldRealms(){
+  WORLDS.forEach(w=>{
+    if(w.type!=='treasure') genWorldRealms(w, w.levels);
+  });
+}
+
+let LVS=[];
+let _ws=Math.floor(Math.random()*99999)|1;
+function qRNG(){_ws=(Math.imul(1664525,_ws)+1013904223)>>>0;return _ws/0x100000000;}
+
+function genWorlds(n){
+  LVS=[];
+  const first4=['horror','disney','quantum','mythic'];
+  for(let i=0;i<n;i++){
+    let tp;
+    if(i<4){tp={...TP.find(t=>t.th===first4[i])};}
+    else{let pk,pv=LVS[i-1]?.th;do{pk=TP[~~(qRNG()*TP.length)];}while(pk.th===pv);tp={...pk};}
+    let rows,cols;
+    if(i===0){rows=3;cols=3;}
+    else if(i===1){rows=3;cols=3;}
+    else if(i===2){rows=4;cols=4;}
+    else if(i===3){rows=4;cols=4;}
+    else if(i===4){rows=4;cols=5;}
+    else if(i===5){rows=4;cols=5;}
+    else if(i===6){rows=5;cols=5;}
+    else if(i===7){rows=5;cols=5;}
+    else if(i===8){rows=5;cols=6;}
+    else if(i===9){rows=5;cols=6;}
+    else{
+      const prev=LVS[i-1];
+      rows=Math.max(prev?prev.rows:5,5+~~(qRNG()*2));
+      cols=Math.max(prev?prev.cols:6,6+~~(qRNG()*1));
+      rows=Math.min(rows,7);cols=Math.min(cols,7);
+    }
+    const tb=rows*cols;
+    let dc;
+    if(i===0)dc=2;
+    else if(i<=2)dc=3;
+    else if(i<=4)dc=3;
+    else if(i<=9)dc=3+~~(qRNG()*2);
+    else dc=Math.min(4+~~(qRNG()*3),Math.floor(tb*0.22));
+    const hasBonusDiamond=i>=5;
+    const timer=i<3?90:i<6?75:i<10?65:60;
+    const hintCount=i<5?3:i<9?2:1;
+    const nm=i<4?tp.nm:(WN[tp.th]||[tp.nm])[~~(qRNG()*(WN[tp.th]?.length||1))];
+    LVS.push({
+      id:i+1,th:tp.th,nm,realm:`Realm ${ORD[i]||String(i+1)}`,
+      ico:tp.ico,cem:tp.cem,tcls:tp.tcls,bcls:tp.bcls,fbcls:tp.fbcls,
+      hbcls:tp.hbcls,mcls:tp.mcls,mpcls:tp.mpcls,bgcls:tp.bgcls,cc:tp.cc,col:tp.col,win:tp.win,
+      rows,cols,gridSize:cols,totalBlocks:tb,diamondCount:dc,
+      hasBonusDiamond,timer,hintCount
+    });
+  }
+}
+genWorlds(12);
+initAllWorldRealms();
+
+// ── BLOCK GLYPHS per theme ──
+const BG={
+  horror:[{g:'☠',s:'DARK'},{g:'†',s:'VOID'},{g:'Ω',s:'SOUL'},{g:'Ξ',s:'GATE'},{g:'∇',s:'FALL'},{g:'⊗',s:'LOST'},{g:'⊕',s:'RIFT'},{g:'∅',s:'NULL'},{g:'ℵ',s:'DEAD'}],
+  disney:[{g:'✦',s:'BELL'},{g:'✧',s:'WISH'},{g:'❋',s:'STAR'},{g:'⁕',s:'HOPE'},{g:'⊛',s:'GLOW'},{g:'✺',s:'MAGIC'},{g:'❂',s:'DREAM'},{g:'✴',s:'FAIRY'},{g:'⁂',s:'SPIN'}],
+  quantum:[{g:'|0⟩',s:'Qbit'},{g:'|1⟩',s:'Qbit'},{g:'|+⟩',s:'H'},{g:'|ψ⟩',s:'State'},{g:'CX',s:'CNOT'},{g:'H',s:'Had'},{g:'T',s:'Tg'},{g:'S',s:'Sg'},{g:'QFT',s:'Four'},{g:'X',s:'Pauli'},{g:'Y',s:'Pauli'},{g:'Z',s:'Pauli'},{g:'SW',s:'SWAP'},{g:'Rx',s:'Rot'},{g:'CCX',s:'Toff'}],
+  mythic:[{g:'⚡',s:'EIG'},{g:'♾',s:'INF'},{g:'⚜',s:'NOB'},{g:'Ω',s:'OMG'},{g:'Δ',s:'DEL'},{g:'Λ',s:'LAM'},{g:'Σ',s:'SIG'},{g:'Π',s:'PI'},{g:'Φ',s:'PHI'},{g:'Γ',s:'GAM'},{g:'θ',s:'THE'},{g:'μ',s:'MU'},{g:'ρ',s:'RHO'},{g:'τ',s:'TAU'},{g:'ψ',s:'PSI'}],
+  neon:[{g:'◈',s:'NEON'},{g:'◉',s:'PULS'},{g:'◍',s:'GLOW'},{g:'⬡',s:'HEX'},{g:'⬢',s:'CORE'},{g:'◆',s:'NODE'},{g:'◇',s:'LINK'},{g:'⬟',s:'GRID'},{g:'⬠',s:'RING'}],
+  cosmic:[{g:'★',s:'NOVA'},{g:'☆',s:'PLSR'},{g:'✦',s:'QASR'},{g:'✧',s:'NEBL'},{g:'✩',s:'DWRF'},{g:'✪',s:'GINT'},{g:'✫',s:'BNRY'},{g:'✬',s:'SUPR'},{g:'✭',s:'HYPR'}],
+  glacier:[{g:'❄',s:'CRYO'},{g:'❅',s:'FRST'},{g:'❆',s:'ICE'},{g:'◈',s:'ZERO'},{g:'⬡',s:'LAT'},{g:'⟨φ|',s:'BRA'},{g:'|ψ⟩',s:'KET'},{g:'⊗',s:'TNS'},{g:'∥',s:'NORM'}],
+  abyss:[{g:'◉',s:'VOID'},{g:'⊙',s:'DARK'},{g:'∞',s:'ABYS'},{g:'⋈',s:'RIFT'},{g:'⊘',s:'NULL'},{g:'⊛',s:'ANTI'},{g:'⊝',s:'MNS'},{g:'⊜',s:'ZRO'},{g:'⊞',s:'PLS'}],
+};
+
+// ── LEVEL-SELECT CARD BUILDER (index-16 style) ──
+function buildTreasureCards(){
+  const g=document.getElementById('cg');g.innerHTML='';
+  updateTreasureHUD();
+  LVS.forEach(lv=>{
+    const ul=ST.trUnlocked.includes(lv.id),done=ST.trCompleted.includes(lv.id);
+    const d=document.createElement('div');
+    d.className=`lcard ${lv.cc}${!ul?' locked':''}`;
+    if(ul)d.onclick=()=>{sClick();enterTreasureLevel(lv.id);};
+    d.innerHTML=`<div class="lcbg"></div><div class="lce">${lv.cem}</div>
+      ${done?'<div class="cbdg">✓ Clear</div>':''}
+      <div class="lcb">
+        <div class="lcbdg">${lv.realm}</div>
+        <div class="lcn2">${lv.th.toUpperCase()}</div>
+        <div class="lcname">${lv.nm}</div>
+        <div class="lcst">⏱ ${lv.timer}s · ${lv.rows}×${lv.cols} · 💎 ${lv.diamondCount}${lv.hasBonusDiamond?' · ❤️':''} · ${lv.id<=4?'Easy':lv.id<=8?'Medium':'Hard'}</div>
+        <button class="lcent"${!ul?' disabled':''}>${done?'Replay':'Enter'}</button>
+      </div>
+      ${!ul?`<div class="lclk"><div class="lclki">🔒</div><div class="lclkt">Clear Realm ${lv.id-1}</div></div>`:''}`;
+    g.appendChild(d);
+  });
+  // Generate more realms button
+  const more=document.createElement('div');
+  more.style.cssText='display:flex;align-items:center;justify-content:center;min-height:160px;border:1px dashed rgba(0,212,255,.18);border-radius:11px;cursor:none;transition:border-color .2s;flex-direction:column;gap:6px;';
+  more.innerHTML=`<div style="font-size:1.3rem;animation:spin 4s linear infinite">⚛️</div><div style="font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:3px;color:rgba(0,212,255,.45);text-transform:uppercase">Generate 4 More Realms</div><div style="font-size:.4rem;color:rgba(255,255,255,.25);letter-spacing:2px;text-transform:uppercase;">Quantum Randomness</div>`;
+  more.onmouseenter=()=>more.style.borderColor='rgba(0,212,255,.4)';
+  more.onmouseleave=()=>more.style.borderColor='rgba(0,212,255,.18)';
+  more.onclick=()=>{sClick();genWorlds(LVS.length+4);buildTreasureCards();toast('<strong>⚛️ 4 new realms generated!</strong>');confetti(30);};
+  g.appendChild(more);
+}
+
+function updateTreasureHUD(){
+  document.getElementById('tr-found').textContent=ST.trFound||0;
+  document.getElementById('tr-score').textContent=ST.score;
+  ['thr1','thr2','thr3'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el){el.textContent=i<ST.lives?'❤️':'🖤';el.className=i<ST.lives?'hrt':'hrt lost';}
+  });
+}
+
+// ── ENTER A TREASURE LEVEL (index-16 enterLevel) ──
+function enterTreasureLevel(id){
+  const lv=LVS.find(l=>l.id===id);
+  const offPos=[];const tb=lv.totalBlocks;
+  while(offPos.length<lv.diamondCount){const r=~~(Math.random()*tb);if(!offPos.includes(r))offPos.push(r);}
+  let bonusDiamondIdx=null;
+  if(lv.hasBonusDiamond){do{bonusDiamondIdx=~~(Math.random()*tb);}while(offPos.includes(bonusDiamondIdx));}
+  G={lv,found:0,total:lv.diamondCount,
+    rev:new Array(tb).fill(false),totalBlocks:tb,
+    rows:lv.rows,cols:lv.cols,
+    _offPos:offPos,timeLeft:lv.timer,timerRunning:false,
+    quizUsed:false,bonusDiamondIdx,
+    world:{id:1,type:'treasure',name:'Quantum Treasure Hunt',icon:'💎'}
+  };
+  ST.lives=3;ST.hints=lv.hintCount||1;
+
+  // Set game screen background to level theme
+  const gs=document.getElementById('sg');
+  gs.className='screen gscreen active '+lv.bgcls;
+  if(lv.th==='horror')gs.classList.add('hflk');
+  setCC(lv.col||'#00d4ff');
+
+  // Style hint + quiz buttons
+  document.getElementById('hbtn').className=`topbtn ${lv.hbcls}`;
+  document.getElementById('hbtn').innerHTML=`💡 Hint (<span id="ghi">${ST.hints}</span>)`;
+  document.getElementById('qzbtn').className='topbtn qzbtn2';
+  document.getElementById('qzbtn').disabled=false;
+
+  document.getElementById('gtbt').innerHTML=`<span class="${lv.tcls}">${lv.nm}</span>`;
+  document.getElementById('lsub').textContent=`${lv.realm} · ${lv.rows}×${lv.cols} Grid`;
+  document.getElementById('ltit').innerHTML=`<span class="${lv.tcls}">${lv.nm}</span>`;
+  document.getElementById('ldesc').textContent=`Find ${lv.diamondCount} 💎${lv.hasBonusDiamond?' · A block hides ❤️ bonus life!':''}`;
+  document.getElementById('fbf').className='fbf '+lv.fbcls;
+  document.getElementById('fbl-left').textContent='💎 Diamonds';
+
+  buildTreasureGrid(lv);
+  updateGameHUD();
+  spawnFP(lv.th);
+  if(lv.th==='disney')addTrStars();
+  playBg(lv.th);
+  startTimer(lv.timer,()=>{
+    clearInterval(trFpInt);
+    // timesUp for treasure uses its own modal
+    sGameOver();
+    showModal('⏱',"<span style='color:#ff4757'>Time's Up!</span>",
+      `${lv.realm} expired.<br>Score: <strong>${ST.score}</strong>`,'mb2-q',[
+        {t:'↺ Retry',c:'mp-r',fn:()=>{sClick();closeMo();enterTreasureLevel(lv.id);}},
+        {t:'All Realms',c:'ms',fn:()=>{sClick();closeMo();openTreasureSelect();}}
+      ]);
+  });
+  SS('sg');
+}
+
+// ── BUILD GRID ──
+let trFpInt=null;
+function buildTreasureGrid(lv){
+  const ga=document.getElementById('game-area');ga.innerHTML='';
+  const tg=document.createElement('div');tg.className='tg';
+  tg.style.gridTemplateColumns=`repeat(${lv.cols},1fr)`;
+  const mw=lv.cols<=3?'min(360px,88vw)':lv.cols<=4?'min(420px,90vw)':lv.cols<=5?'min(460px,92vw)':'min(500px,94vw)';
+  tg.style.maxWidth=mw;tg.style.gap='4px';
+  const glyphs=[...(BG[lv.th]||BG.quantum)];
+  for(let i=glyphs.length-1;i>0;i--){const j=~~(Math.random()*(i+1));[glyphs[i],glyphs[j]]=[glyphs[j],glyphs[i]];}
+  for(let i=0;i<lv.totalBlocks;i++){
+    const b=document.createElement('div');b.className=`tb ${lv.bcls}`;b.style.animationDelay=(i*.025)+'s';
+    const isBonus=G.bonusDiamondIdx===i;
+    const gl=glyphs[i%glyphs.length];
+    b.innerHTML=`<div class="tb-glyph">${gl.g}</div><div class="tb-label">${gl.s}</div>`;
+    b.onclick=()=>clickTreasureBlock(i,b,lv,isBonus);
+    tg.appendChild(b);
+  }
+  ga.appendChild(tg);
+  // Spawn floating particles
+  clearInterval(trFpInt);
+  trFpInt=setInterval(()=>{
+    const p=document.createElement('div');p.className='fp';
+    const s=Math.random()*3+1;
+    p.style.cssText=`width:${s}px;height:${s}px;background:${lv.col};left:${Math.random()*100}%;bottom:0;animation-duration:${Math.random()*5+4}s;`;
+    ga.appendChild(p);setTimeout(()=>p.remove(),9000);
+  },700);
+}
+
+// ── CLICK BLOCK ──
+function clickTreasureBlock(idx,block,lv,isBonus){
+  if(block.classList.contains('rev')||!G.timerRunning)return;
+  block.classList.add('rev');
+  if(isBonus){
+    block.classList.add('tf');
+    block.innerHTML=`<div class="diamond-found"><div class="diamond-emoji">❤️</div><div class="diamond-txt" style="color:#ff4757">+LIFE!</div></div>`;
+    ST.lives=Math.min(3,ST.lives+1);flashGain();updateGameHUD();updateTreasureHUD();
+    toast('<strong>❤️ Bonus Life!</strong> Hidden in that block!');return;
+  }
+  G.rev[idx]=true;
+  if(G._offPos.includes(idx)){
+    // Diamond found
+    sSuccess();block.classList.add('tf');
+    block.innerHTML=`<div class="diamond-found"><div class="diamond-emoji">💎</div><div class="diamond-txt" style="color:${lv.col}">FOUND!</div></div>`;
+    G.found++;ST.found=(ST.found||0)+1;ST.trFound=(ST.trFound||0)+1;
+    ST.score+=100+ST.hints*10;updateGameHUD();updateTreasureHUD();confetti();
+    setFB(G.found,G.total,lv.col);
+    document.getElementById('fbl').textContent=`${G.found}/${G.total}`;
+    if(G.found>=G.total){
+      clearInterval(trFpInt);stopTimer();
+      setTimeout(()=>treasureLevelWin(lv),700);
+    }
+  }else{
+    // Wrong
+    sWrong();block.classList.add('wrong');
+    block.innerHTML=`<div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:.28;font-size:clamp(.8rem,2.5vw,1.2rem);">✗</div>`;
+    setTimeout(()=>block.classList.remove('wrong'),350);
+    ST.lives=Math.max(0,ST.lives-1);sLife();flashLost();updateGameHUD();updateTreasureHUD();
+    if(ST.lives<=0){
+      clearInterval(trFpInt);stopTimer();stopBg();
+      setTimeout(()=>{
+        sGameOver();
+        showModal('💔','<span style="color:#e74c3c">Game Over</span>',
+          `No lives left in <em>${lv.nm}</em>.<br>Score: <strong>${ST.score}</strong>`,'mb2-q',[
+            {t:'↺ Retry',c:'mp-r',fn:()=>{sClick();closeMo();ST.lives=3;enterTreasureLevel(lv.id);}},
+            {t:'All Realms',c:'ms',fn:()=>{sClick();closeMo();openTreasureSelect();}}
+          ]);
+      },600);
+    }
+  }
+}
+
+// ── WIN HANDLER ──
+function treasureLevelWin(lv){
+  sWin();confetti(80);stopBg();
+  const bonus=(G.timeLeft||0)*2;ST.score+=bonus;saveScore();
+  const nid=lv.id+1;
+  if(!ST.trUnlocked.includes(nid))ST.trUnlocked.push(nid);
+  if(!ST.trCompleted.includes(lv.id))ST.trCompleted.push(lv.id);
+  if(nid>=LVS.length-1)genWorlds(LVS.length+4);
+  const next=LVS.find(l=>l.id===nid);
+  showModal('💎',`<span class="${lv.tcls}">Realm Cleared! ✨</span>`,
+    `<strong>${lv.win}</strong><br><br>${next?`<em>${next.realm} — ${next.nm}</em> unlocked!<br>`:''}⚡ Score: <strong>${ST.score}</strong> (+${bonus} speed bonus)`,
+    lv.mcls,[
+      ...(next?[{t:`Next: ${next.realm} →`,c:lv.mpcls,fn:()=>{sClick();closeMo();enterTreasureLevel(next.id);}}]:[]),
+      {t:'All Realms',c:'ms',fn:()=>{sClick();closeMo();openTreasureSelect();}},
+      {t:'↺ Replay',c:'ms',fn:()=>{sClick();closeMo();ST.lives=3;enterTreasureLevel(lv.id);}}
+    ]);
+}
+
+// ── HINT ──
+function useTreasureHint(){
+  if(ST.hints<=0){toast('<strong>No hints left!</strong>');return;}
+  sHint();ST.hints--;updateGameHUD();
+  const unrev=(G._offPos||[]).filter(i=>!G.rev[i]);
+  if(unrev.length){
+    const hi=unrev[~~(Math.random()*unrev.length)];
+    const blocks=document.querySelectorAll('.tb');const hel=blocks[hi];
+    if(hel&&!hel.classList.contains('rev')){
+      hel.style.setProperty('--hc',G.lv?.col||'#00d4ff');hel.classList.add('hint-glow');
+      setTimeout(()=>hel.classList.remove('hint-glow'),3000);
+    }
+  }
+  const r=G.rows,c=G.cols;
+  const t=unrev[0];const tr=Math.floor(t/c),tc=t%c;
+  const vz=tr<r/3?'upper':tr<2*r/3?'middle':'lower';
+  const hz=tc<c/3?'left':tc<2*c/3?'centre':'right';
+  toast(`<strong>💡 Hint:</strong> Try the ${vz}-${hz} area of the grid.`);
+}
+
+function addTrStars(){
+  const ga=document.getElementById('gi');
+  for(let i=0;i<12;i++){
+    const s=document.createElement('div');s.className='dstar';
+    s.textContent=['⭐','✨','💫','🌟'][~~(Math.random()*4)];
+    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;font-size:${Math.random()*10+5}px;animation-duration:${Math.random()*3+1.5}s;animation-delay:${Math.random()*3}s;position:absolute;z-index:1;`;
+    ga.appendChild(s);
+  }
+}
+
+// spawnFP — floating particles per theme (same as index 16)
+let fpi=null;
+function spawnFP(th){
+  clearInterval(fpi);document.querySelectorAll('.fp').forEach(p=>p.remove());
+  const cs={horror:['rgba(192,57,43,.52)','rgba(100,0,0,.42)'],disney:['rgba(255,110,180,.48)','rgba(79,195,247,.48)','rgba(255,213,79,.42)'],quantum:['rgba(0,212,255,.46)','rgba(123,47,255,.42)'],mythic:['rgba(245,197,24,.46)'],neon:['rgba(57,255,20,.48)'],cosmic:['rgba(255,147,0,.46)'],glacier:['rgba(100,200,255,.42)'],abyss:['rgba(200,100,255,.46)']}[th]||['rgba(0,212,255,.38)'];
+  const gi=document.getElementById('gi');
+  fpi=setInterval(()=>{
+    const p=document.createElement('div');p.className='fp';
+    const c=cs[~~(Math.random()*cs.length)],s=Math.random()*3.5+1.3;
+    p.style.cssText=`width:${s}px;height:${s}px;background:${c};left:${Math.random()*100}%;bottom:0;animation-duration:${Math.random()*5+4}s;animation-delay:${Math.random()*2}s;`;
+    gi.appendChild(p);setTimeout(()=>p.remove(),9000);
+  },700);
+}
+
+// startTreasure — called by startWorldLevel dispatcher but we override it
+// to open the treasure level select instead
+function startTreasure(w,lv){
+  // This path is used when entering from the World Hub → World 1 → level N
+  // We directly run the level
+  const lvData=LVS[Math.min(lv-1,LVS.length-1)];
+  if(lvData) enterTreasureLevel(lvData.id);
+}
+
+// openTreasureSelect — navigate to the s-treasure screen
+function openTreasureSelect(){
+  clearInterval(trFpInt);clearInterval(fpi);
+  document.querySelectorAll('.fp,.dstar').forEach(e=>e.remove());
+  stopBg();
+  document.getElementById('trlev-p').textContent=CURRENT_USER?`👤 ${CURRENT_USER}`:'👤 Guest';
+  document.getElementById('tr-hud-u').textContent=CURRENT_USER||'Guest';
+  buildTreasureCards();
+  loadTreasureLeaderboard();
+  SS('s-treasure');
+}
+
+async function loadTreasureLeaderboard(){
+  const panel=document.getElementById('tr-lb-rows');
+  try{const r=await fetch(`${API}/leaderboard`,{signal:AbortSignal.timeout(2000)});const data=await r.json();
+    if(data&&data.length){panel.innerHTML=data.slice(0,5).map(([n,s],i)=>`<div class="lb-row">${['🥇','🥈','🥉','4.','5.'][i]} <strong>${n}</strong> — ${s}</div>`).join('');return;}}catch{}
+  const ent=Object.entries(LOCAL_SCORES).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  if(ent.length)panel.innerHTML=ent.map(([n,s],i)=>`<div class="lb-row">${['🥇','🥈','🥉','4.','5.'][i]} <strong>${n}</strong> — ${s}</div>`).join('');
+  else panel.innerHTML='<div class="lb-empty">No scores yet — be the first!</div>';
+}
+
+/* ═══════════════════════════════════════════
+   WORLD 2 — QUANTUM MAZE
+═══════════════════════════════════════════ */
+function startMaze(w,lv){
+  const size=Math.min(4+lv,10);
+  const rm=G.realm||(WORLD_LVS[w.id]||[])[lv-1]||null;
+  document.getElementById('ldesc').textContent=`${rm?rm.realm:'Realm '+lv} · ${size}×${size} maze · Escape before time runs out!`;
+  document.getElementById('fbl-left').textContent='Steps';
+  const ga=document.getElementById('game-area');ga.innerHTML='';
+  const maze=generateMaze(size,size);
+  const mazecol=rm?rm.col:w.col;
+  G.maze={size,grid:maze,px:0,py:0,ex:size-1,ey:size-1,steps:0,ghosts:[]};
+  setFB(0,size*2,mazecol);
+  const wrap=document.createElement('div');wrap.className='maze-wrap';
+  wrap.style.background='radial-gradient(ellipse 80% 60% at 50% 50%,rgba(0,20,40,.9),rgba(0,5,15,.98))';
+  wrap.style.borderColor=mazecol+'44';
+  const canvas=document.createElement('canvas');canvas.className='maze-canvas';
+  const player=document.createElement('div');player.className='maze-player';player.id='maze-player';
+  player.textContent=rm?rm.ico:'⚛️';player.style.background=mazecol;player.style.boxShadow=`0 0 12px ${mazecol}`;
+  const exit=document.createElement('div');exit.className='maze-exit';exit.textContent='🚪';
+  wrap.appendChild(canvas);wrap.appendChild(player);wrap.appendChild(exit);
+  const arrows=document.createElement('div');arrows.className='maze-arrows';
+  arrows.innerHTML=`<div class="maze-row"><button class="maze-btn" onclick="moveMaze(0,-1,event)">↑</button></div>
+    <div class="maze-row"><button class="maze-btn" onclick="moveMaze(-1,0,event)">←</button><button class="maze-btn" onclick="moveMaze(0,1,event)">↓</button><button class="maze-btn" onclick="moveMaze(1,0,event)">→</button></div>`;
+  const info=document.createElement('div');info.className='maze-quantum-info';info.textContent=`⚛️ WASD/arrow keys to move · Paths collapse every 8s · Time runs out = over!`;
+  ga.appendChild(wrap);ga.appendChild(arrows);ga.appendChild(info);
+  // Maze has no lives or hints — hide those buttons
+  document.getElementById('hbtn').style.display='none';
+  document.getElementById('qzbtn').style.display='none';
+  setTimeout(()=>{
+    const W=wrap.offsetWidth,H=wrap.offsetHeight;
+    canvas.width=W;canvas.height=H;
+    const cw=W/size,ch=H/size;
+    drawMaze(canvas,maze,size,cw,ch);
+    positionMazeElements(player,exit,G.maze,cw,ch);
+    // Position ghosts
+    G.maze.ghosts.forEach((gh)=>{
+      gh.el.style.left=(gh.gx*cw+cw*0.15)+'px';gh.el.style.top=(gh.gy*ch+ch*0.15)+'px';
+      gh.el.style.width=(cw*0.7)+'px';gh.el.style.height=(ch*0.7)+'px';
+      gh.el.style.display='flex';gh.el.style.alignItems='center';gh.el.style.justifyContent='center';
+    });
+  },50);
+  G.maze.keyHandler=(e)=>{
+    const map={'ArrowUp':[0,-1],'ArrowDown':[0,1],'ArrowLeft':[-1,0],'ArrowRight':[1,0],'w':[0,-1],'s':[0,1],'a':[-1,0],'d':[1,0]};
+    if(map[e.key]){e.preventDefault();moveMaze(...map[e.key],null);}
+  };
+  document.addEventListener('keydown',G.maze.keyHandler);
+  // No ghosts — pure navigation challenge. Time over = out.
+  const mazeTime=Math.max(30,70-lv*5);
+  startTimer(mazeTime,()=>{clearInterval(G.maze.collapseInt);document.removeEventListener('keydown',G.maze.keyHandler);timesUp(w);});
+  G.maze.collapseInt=setInterval(()=>{if(!G.timerRunning)return;collapseMazePath(w);},8000);
+}
+
+function generateMaze(w,h){
+  const grid=Array.from({length:h},()=>Array.from({length:w},()=>({n:true,s:true,e:true,w:true,vis:false})));
+  function carve(x,y){
+    grid[y][x].vis=true;
+    const dirs=[[0,-1,'n','s'],[0,1,'s','n'],[1,0,'e','w'],[-1,0,'w','e']].sort(()=>Math.random()-.5);
+    dirs.forEach(([dx,dy,d,od])=>{const nx=x+dx,ny=y+dy;if(nx>=0&&nx<w&&ny>=0&&ny<h&&!grid[ny][nx].vis){grid[y][x][d]=false;grid[ny][nx][od]=false;carve(nx,ny);}});
+  }
+  carve(0,0);return grid;
+}
+
+function drawMaze(canvas,maze,size,cw,ch){
+  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle='rgba(0,212,255,.5)';ctx.lineWidth=2;
+  for(let y=0;y<size;y++){for(let x=0;x<size;x++){
+    const c=maze[y][x],px=x*cw,py=y*ch;
+    ctx.strokeStyle=`rgba(0,212,255,${0.3+0.2*Math.sin((x+y)*0.5)})`;
+    if(c.n){ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px+cw,py);ctx.stroke();}
+    if(c.s){ctx.beginPath();ctx.moveTo(px,py+ch);ctx.lineTo(px+cw,py+ch);ctx.stroke();}
+    if(c.w){ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px,py+ch);ctx.stroke();}
+    if(c.e){ctx.beginPath();ctx.moveTo(px+cw,py);ctx.lineTo(px+cw,py+ch);ctx.stroke();}
+  }}
+}
+
+function positionMazeElements(player,exit,m,cw,ch){
+  player.style.left=(m.px*cw+cw*0.1)+'px';player.style.top=(m.py*ch+ch*0.1)+'px';
+  player.style.width=(cw*0.8)+'px';player.style.height=(ch*0.8)+'px';
+  exit.style.left=(m.ex*cw+cw*0.1)+'px';exit.style.top=(m.ey*ch+ch*0.1)+'px';
+  exit.style.width=(cw*0.8)+'px';exit.style.height=(ch*0.8)+'px';
+}
+
+function moveMaze(dx,dy,e){
+  if(e){e.stopPropagation();}
+  if(!G.maze||!G.timerRunning)return;
+  const {px,py,size,grid}=G.maze;
+  const nx=px+dx,ny=py+dy;
+  if(nx<0||nx>=size||ny<0||ny>=size)return;
+  // Check wall
+  const cell=grid[py][px];
+  if(dx===1&&cell.e)return;if(dx===-1&&cell.w)return;if(dy===1&&cell.s)return;if(dy===-1&&cell.n)return;
+  sClick();
+  G.maze.px=nx;G.maze.py=ny;G.maze.steps++;
+  ST.score+=2;updateGameHUD();
+  const wrap=document.querySelector('.maze-wrap');
+  if(!wrap)return;
+  const cw=wrap.offsetWidth/size,ch=wrap.offsetHeight/size;
+  const player=document.getElementById('maze-player');
+  player.style.left=(nx*cw+cw*0.1)+'px';player.style.top=(ny*ch+ch*0.1)+'px';
+  setFB(Math.min(G.maze.steps,size*2),size*2,G.world.col);
+  if(nx===G.maze.ex&&ny===G.maze.ey){
+    clearInterval(G.maze.collapseInt);
+    document.removeEventListener('keydown',G.maze.keyHandler);
+    stopTimer();setTimeout(()=>worldLevelWin(G.world),500);
+  }
+}
+
+function collapseMazePath(w){
+  // Quantum measurement: randomly open a new path (exciting visual)
+  const {grid,size}=G.maze;
+  const x=~~(Math.random()*size),y=~~(Math.random()*size);
+  const dirs=['n','s','e','w'];const d=dirs[~~(Math.random()*4)];
+  grid[y][x][d]=!grid[y][x][d];
+  toast('<strong>⚛️ Quantum collapse!</strong> A path just changed state...');
+  const wrap=document.querySelector('.maze-wrap');
+  if(wrap){const canvas=wrap.querySelector('canvas');if(canvas){const cw=wrap.offsetWidth/size,ch=wrap.offsetHeight/size;drawMaze(canvas,G.maze.grid,size,cw,ch);}}
+}
+
+/* ═══════════════════════════════════════════
+   WORLD 3 — QUANTUM TARGET SHOOTING
+═══════════════════════════════════════════ */
+function startTarget(w,lv){
+  const rm=G.realm||(WORLD_LVS[w.id]||[])[lv-1]||null;
+  // L1 starts with 6 fakes, grows to 12+
+  const timer=lv<=3?40:Math.min(35+lv*4,90);
+  const numTargets=Math.min(5+lv,13); // L1=6, L5=10, L8=13
+  const goal=Math.min(3+lv,14);
+  document.getElementById('ldesc').textContent=`${rm?rm.realm:'Realm '+lv} · Find the real target among ${numTargets} phantoms! Hit ${goal}`;
+  document.getElementById('fbl-left').textContent='🎯 Hits';
+  G.target={hits:0,misses:0,goal,numTargets};
+  setFB(0,goal,w.col);
+  const ga=document.getElementById('game-area');ga.innerHTML='';
+  const arena=document.createElement('div');arena.className='target-arena';arena.id='target-arena';
+  const acc=document.createElement('div');acc.className='target-accuracy';acc.id='target-acc';
+  acc.textContent=`⚛️ ${numTargets} quantum states · Only 1 is REAL`;
+  ga.appendChild(arena);ga.appendChild(acc);
+  spawnTargets(w,numTargets);
+  startTimer(timer,()=>timesUp(w));
+}
+
+function spawnTargets(w,n){
+  const arena=document.getElementById('target-arena');if(!arena)return;
+  arena.innerHTML='';
+  const rm=G.realm||(WORLD_LVS[w.id]||[])[G.level-1]||null;
+  const realIdx=~~(Math.random()*n);
+  const baseSize=Math.max(arena.offsetWidth/n*0.7,30);
+  const sz=clamp(28,68,baseSize);
+  for(let i=0;i<n;i++){
+    const isReal=i===realIdx;
+    const t=document.createElement('div');t.className='target';
+    const top=8+Math.random()*76,left=3+Math.random()*90;
+    t.style.cssText=`top:${top}%;left:${left}%;position:absolute;`;
+    const c=document.createElement('div');
+    // Real = dark crimson with ghost icon, fakes = dark shadows
+    c.className=`target-circle ${isReal?'target-real':'target-fake'}`;
+    c.style.width=sz+'px';c.style.height=sz+'px';
+    c.textContent=isReal?'👻':'👤'; // real is the ghost you want to hit
+    c.onclick=(e)=>hitTarget(e,isReal,w,t);
+    t.appendChild(c);arena.appendChild(t);
+    // ALL targets move — fakes move fast & erratically, real moves slower
+    const speed=isReal?1400+Math.random()*1200:600+Math.random()*800;
+    const moveInt=setInterval(()=>{
+      if(!G.timerRunning){clearInterval(moveInt);return;}
+      t.style.top=(8+Math.random()*76)+'%';
+      t.style.left=(3+Math.random()*90)+'%';
+    },speed);
+  }
+}
+
+function hitTarget(e,isReal,w,el){
+  if(!G.timerRunning)return;
+  e.stopPropagation();
+  if(isReal){
+    sSuccess();G.target.hits++;ST.score+=50;
+    // Score pop
+    const pop=document.createElement('div');pop.className='target-score-pop';pop.textContent='+50';pop.style.cssText=`left:${e.clientX-document.getElementById('target-arena').getBoundingClientRect().left}px;top:${e.clientY-document.getElementById('target-arena').getBoundingClientRect().top}px;color:#39ff14;`;
+    document.getElementById('target-arena').appendChild(pop);setTimeout(()=>pop.remove(),1000);
+    confetti(20);el.remove();setFB(G.target.hits,G.target.goal,w.col);
+    const acc=document.getElementById('target-acc');if(acc)acc.textContent=`🎯 Hits: ${G.target.hits} | ⚛️ Quantum accuracy: ${Math.round(G.target.hits/(G.target.hits+G.target.misses)*100)||0}%`;
+    if(G.target.hits>=G.target.goal){stopTimer();setTimeout(()=>worldLevelWin(w),600);}
+    else setTimeout(()=>spawnTargets(w,G.target.numTargets),800);
+  }else{
+    sWrong();G.target.misses++;
+    const pop=document.createElement('div');pop.className='target-score-pop';pop.textContent='FAKE!';pop.style.cssText=`left:${e.clientX-document.getElementById('target-arena').getBoundingClientRect().left}px;top:${e.clientY-document.getElementById('target-arena').getBoundingClientRect().top}px;color:#ff4757;`;
+    document.getElementById('target-arena').appendChild(pop);setTimeout(()=>pop.remove(),1000);
+    loseLife(w);
+  }
+}
+
+function clamp(min,max,v){return Math.max(min,Math.min(max,v));}
+
+/* ═══════════════════════════════════════════
+   WORLD 4 — QUANTUM MEMORY (fixed & clear)
+═══════════════════════════════════════════ */
+const MEMOJIS=['⚛️','🔮','💎','🌟','🧩','🎯','🌀','🔑','🧬','💫','🎲','🚪'];
+function startMemory(w,lv){
+  // HARDER: more pairs from the start, less time, NO preview (quantum collapse!)
+  // L1=4pairs, L2=5, L3=6, L4=7, L5+=8+decoys
+  const pairs=Math.min(3+lv,10);
+  const decoys=lv>=5?Math.min(lv-4,4):0; // extra fake cards at L5+
+  const total=pairs*2+decoys;
+  const cols=pairs<=4?4:pairs<=6?4:6;
+  // LESS time — harder!
+  const timer=Math.max(30,50+pairs*8-lv*3);
+  // Flip back faster at higher levels
+  const flipDelay=Math.max(600,1100-lv*80);
+  document.getElementById('ldesc').textContent=`Level ${lv} · Match ${pairs} pairs! ${decoys>0?decoys+' decoys! ':''} ${timer}s · Flip-back: ${flipDelay}ms`;
+  document.getElementById('fbl-left').textContent='✅ Pairs';
+  G.mem={pairs:0,goal:pairs,flipped:[],locked:false,flipDelay};
+  setFB(0,pairs,w.col);
+  // Shuffle cards — add decoy unique cards that have no match
+  const chosen=MEMOJIS.slice(0,pairs);
+  const decoyEmojis=['🔥','💀','⚠️','❌'].slice(0,decoys);
+  const cards=[...chosen,...chosen,...decoyEmojis].sort(()=>Math.random()-.5);
+  const ga=document.getElementById('game-area');ga.innerHTML='';
+  const mg=document.createElement('div');mg.className='memory-grid';
+  mg.style.gridTemplateColumns=`repeat(${cols},1fr)`;
+  mg.style.width=`min(${cols*70+cols*7}px,95vw)`;
+  cards.forEach((em,i)=>{
+    const isDecoy=decoyEmojis.includes(em);
+    const mc=document.createElement('div');mc.className='mcard';mc.dataset.val=em;mc.dataset.idx=i;mc.dataset.decoy=isDecoy?'1':'0';
+    mc.innerHTML=`<div class="mcard-inner"><div class="mcard-front"><div class="mcard-front-icon" style="font-size:clamp(.5rem,1.8vw,.9rem)">|ψ⟩</div></div><div class="mcard-back">${em}</div></div>`;
+    mc.onclick=()=>flipCard(mc,w);mg.appendChild(mc);
+  });
+  ga.appendChild(mg);
+  // ONLY L1 gets a tiny preview (0.8s), L2+ no preview
+  if(lv===1){
+    document.querySelectorAll('.mcard').forEach(c=>c.classList.add('flipped'));
+    setTimeout(()=>document.querySelectorAll('.mcard:not(.matched)').forEach(c=>c.classList.remove('flipped')),800);
+  }
+  startTimer(timer,()=>timesUp(w));
+}
+
+function flipCard(card,w){
+  if(!G.timerRunning||G.mem.locked||card.classList.contains('flipped')||card.classList.contains('matched'))return;
+  // If decoy: flip and immediately mark as no-match
+  if(card.dataset.decoy==='1'){sWrong();card.classList.add('flipped');setTimeout(()=>card.classList.remove('flipped'),700);loseLife(w);return;}
+  sFlip();card.classList.add('flipped');G.mem.flipped.push(card);
+  if(G.mem.flipped.length===2){
+    G.mem.locked=true;
+    const [a,b]=G.mem.flipped;
+    const isMatch=a.dataset.val===b.dataset.val&&a.dataset.decoy!=='1';
+    const delay=G.mem.flipDelay||900;
+    setTimeout(()=>{
+      if(isMatch){
+        sMatch();a.classList.add('matched');b.classList.add('matched');
+        G.mem.pairs++;ST.score+=80;updateGameHUD();setFB(G.mem.pairs,G.mem.goal,w.col);confetti(15);
+        toast(`<strong>✅ Match!</strong> ${a.dataset.val} — Bell state collapsed!`);
+        if(G.mem.pairs>=G.mem.goal){stopTimer();setTimeout(()=>worldLevelWin(w),600);}
+      }else{
+        // Quantum twist on higher levels: 15% chance paths swap
+        if(Math.random()<0.15&&G.level>=4){
+          toast('<strong>⚛️ Quantum decoherence!</strong> States flipped!');
+          const tmp=a.dataset.val;a.dataset.val=b.dataset.val;b.dataset.val=tmp;
+          a.querySelector('.mcard-back').textContent=a.dataset.val;
+          b.querySelector('.mcard-back').textContent=b.dataset.val;
+        }
+        a.classList.add('wrong-match');b.classList.add('wrong-match');
+        setTimeout(()=>{a.classList.remove('flipped','wrong-match');b.classList.remove('flipped','wrong-match');},(G.mem.flipDelay||900));
+        loseLife(w);
+      }
+      G.mem.flipped=[];G.mem.locked=false;
+    },delay||600);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   WORLD 5 — QUANTUM DICE
+═══════════════════════════════════════════ */
+function startDice(w,lv){
+  // Spawn animated rolling dice in background
+  document.querySelectorAll('.dice-float').forEach(e=>e.remove());
+  const dfaces=['⚀','⚁','⚂','⚃','⚄','⚅','🎲'];
+  for(let i=0;i<10;i++){
+    const el=document.createElement('div');el.className='dice-float';
+    el.textContent=dfaces[~~(Math.random()*dfaces.length)];
+    el.style.cssText=`left:${Math.random()*100}vw;font-size:${1.2+Math.random()*1.4}rem;animation-duration:${5+Math.random()*9}s;animation-delay:${Math.random()*7}s;`;
+    document.body.appendChild(el);
+  }
+  const numDice=lv<=2?1:lv<=5?2:3;
+  // Easy early: target is achievable range. Hard later: tighter range
+  const maxVal=numDice*6;
+  const midVal=Math.floor(maxVal/2);
+  // L1-3: target near middle (easy), L4+: random
+  const target=lv<=3?midVal+(~~(Math.random()*3)-1):~~(Math.random()*maxVal)+numDice;
+  const goal=Math.min(2+lv,8);
+  const timer=lv<=3?45:lv<=6?35:30; // gets faster!
+  document.getElementById('ldesc').textContent=`Level ${lv} · Roll ${numDice} dice · Hit sum=${target} · Win ${goal}×`;
+  document.getElementById('fbl-left').textContent='🎲 Wins';
+  G.dice={target,goal,wins:0,rolls:0,numDice,rolling:false};
+  setFB(0,goal,w.col);
+  const ga=document.getElementById('game-area');ga.innerHTML='';
+  const arena=document.createElement('div');arena.className='dice-arena';
+  const disp=document.createElement('div');disp.className='dice-display';disp.id='dice-display';
+  for(let i=0;i<numDice;i++){const d=document.createElement('div');d.className='die';d.textContent='⚀';d.id=`die-${i}`;disp.appendChild(d);}
+  const tgt=document.createElement('div');tgt.className='dice-target';tgt.innerHTML=`Target sum: <span id="dice-tgt">${target}</span>`;
+  const btn=document.createElement('button');btn.className='dice-roll-btn';btn.id='dice-btn';btn.textContent='⚛️ Quantum Roll';btn.onclick=()=>rollDice(w);
+  const hist=document.createElement('div');hist.className='dice-history';hist.id='dice-history';
+  arena.appendChild(disp);arena.appendChild(tgt);arena.appendChild(btn);arena.appendChild(hist);
+  ga.appendChild(arena);
+  startTimer(timer,()=>timesUp(w));
+}
+
+const DICE_FACES=['⚀','⚁','⚂','⚃','⚄','⚅'];
+function rollDice(w){
+  if(G.dice.rolling||!G.timerRunning)return;
+  G.dice.rolling=true;sDice();
+  const dice=document.querySelectorAll('.die');
+  let frames=0;const anim=setInterval(()=>{
+    dice.forEach(d=>d.textContent=DICE_FACES[~~(Math.random()*6)]);
+    frames++;if(frames>12){clearInterval(anim);resolveDice(w,dice);}
+  },60);
+}
+
+function resolveDice(w,dice){
+  const vals=[...dice].map(d=>{const v=~~(Math.random()*6)+1;d.textContent=DICE_FACES[v-1];d.classList.add('rolling');setTimeout(()=>d.classList.remove('rolling'),500);return v;});
+  const sum=vals.reduce((a,b)=>a+b,0);
+  G.dice.rolls++;G.dice.rolling=false;
+  const win=sum===G.dice.target;
+  const hist=document.getElementById('dice-history');
+  const pip=document.createElement('div');pip.className=`dice-pip ${win?'win':'lose'}`;pip.textContent=sum;hist.insertBefore(pip,hist.firstChild);
+  if(win){sSuccess();G.dice.wins++;ST.score+=60;updateGameHUD();confetti(15);setFB(G.dice.wins,G.dice.goal,w.col);
+    toast(`<strong>🎲 ${sum}!</strong> Quantum dice hit the target!`);
+    if(G.dice.wins>=G.dice.goal){stopTimer();setTimeout(()=>worldLevelWin(w),600);}
+    else{const t=lv<=3?Math.floor(G.dice.numDice*3)+(~~(Math.random()*3)-1):~~(Math.random()*G.dice.numDice*6)+G.dice.numDice;G.dice.target=t;const ts=document.getElementById('dice-tgt');if(ts)ts.textContent=t;}
+  }else{sWrong();loseLife(w);}
+}
+
+/* ═══════════════════════════════════════════
+   WORLD 6 — QUANTUM SURVIVAL (fixed ghosts)
+═══════════════════════════════════════════ */
+function startSurvival(w,lv){
+  // Start BIG: L1=7 ghosts, increases to 12+
+  const numGhosts=Math.min(7+lv-1,14);
+  const surviveFor=12+lv*4;
+  ST.lives=3; // lives restored per level (survival has own challenge)
+  updateGameHUD();
+  document.getElementById('ldesc').textContent=`Level ${lv} · Survive ${surviveFor}s! ${numGhosts} 👻 hunt you!`;
+  document.getElementById('fbl-left').textContent='⏱ Survived';
+  G.surv={ghosts:[],px:50,py:42,survived:0,goal:surviveFor,cooldown:false};
+  setFB(0,surviveFor,w.col);
+  const ga=document.getElementById('game-area');ga.innerHTML='';
+  const arena=document.createElement('div');arena.className='surv-arena';arena.id='surv-arena';
+  const safe=document.createElement('div');safe.className='safe-zone';
+  safe.style.cssText='width:16%;height:16%;top:42%;left:42%;';safe.textContent='SAFE';
+  arena.appendChild(safe);
+  const player=document.createElement('div');player.className='surv-player';player.id='surv-player';
+  player.style.cssText=`left:${G.surv.px}%;top:${G.surv.py}%;`;player.textContent='🧑';
+  arena.appendChild(player);
+  // Spawn ghosts at corners & sides
+  const spawnPoints=[[5,5],[85,5],[5,80],[85,80],[45,5],[5,42],[85,42],[45,80],[25,5],[65,5],[5,60],[85,60],[25,80],[65,80]];
+  const ghostEmojis=['👻','💀','🌑','☠️','👾','🕷️','🦇','🌀'];
+  for(let i=0;i<numGhosts;i++){
+    const ghost=document.createElement('div');ghost.className='ghost';
+    const sp=spawnPoints[i%spawnPoints.length];
+    ghost.style.cssText=`left:${sp[0]}%;top:${sp[1]}%;`;
+    ghost.textContent=ghostEmojis[i%ghostEmojis.length];
+    arena.appendChild(ghost);
+    // Each ghost has its own independent velocity and behaviour
+    G.surv.ghosts.push({
+      el:ghost,x:sp[0],y:sp[1],
+      vx:(Math.random()-.5)*6,  // independent random velocity
+      vy:(Math.random()-.5)*6,
+      chaseProb:0.2+Math.random()*0.4,  // different chase tendencies
+      speed:3+Math.random()*5,           // different speeds
+    });
+  }
+  const arrows=document.createElement('div');arrows.className='surv-arrows';
+  arrows.innerHTML=`<div style="display:flex;"><button class="maze-btn" onclick="moveSurv(0,-8)">↑</button></div>
+    <div style="display:flex;gap:4px;"><button class="maze-btn" onclick="moveSurv(-8,0)">←</button><button class="maze-btn" onclick="moveSurv(0,8)">↓</button><button class="maze-btn" onclick="moveSurv(8,0)">→</button></div>`;
+  ga.appendChild(arena);ga.appendChild(arrows);
+
+  // Ghosts move INDEPENDENTLY — each with own velocity, bounce off walls
+  const ghostMs=Math.max(100,280-lv*18);
+  G.surv.ghostInt=setInterval(()=>{
+    if(!G.timerRunning)return;
+    G.surv.ghosts.forEach(gh=>{
+      // Each ghost independently decides: chase or random drift
+      const doChase=Math.random()<gh.chaseProb;
+      if(doChase){
+        // Chase player with own speed, add personal wobble
+        const dx=G.surv.px-gh.x, dy=G.surv.py-gh.y;
+        const dist=Math.sqrt(dx*dx+dy*dy)||1;
+        gh.x+=dx/dist*gh.speed*0.6+((Math.random()-.5)*3);
+        gh.y+=dy/dist*gh.speed*0.6+((Math.random()-.5)*3);
+      }else{
+        // Independent random walk with own velocity
+        gh.vx+=(Math.random()-.5)*2;gh.vy+=(Math.random()-.5)*2;
+        gh.vx=Math.max(-gh.speed,Math.min(gh.speed,gh.vx));
+        gh.vy=Math.max(-gh.speed,Math.min(gh.speed,gh.vy));
+        gh.x+=gh.vx;gh.y+=gh.vy;
+      }
+      // Bounce off walls — each ghost independently
+      if(gh.x<0){gh.x=0;gh.vx=Math.abs(gh.vx);}
+      if(gh.x>90){gh.x=90;gh.vx=-Math.abs(gh.vx);}
+      if(gh.y<0){gh.y=0;gh.vy=Math.abs(gh.vy);}
+      if(gh.y>85){gh.y=85;gh.vy=-Math.abs(gh.vy);}
+      gh.el.style.left=gh.x+'%';
+      gh.el.style.top=gh.y+'%';
+      // Catch check
+      if(!G.surv.cooldown&&Math.abs(gh.x-G.surv.px)<7&&Math.abs(gh.y-G.surv.py)<7){
+        G.surv.cooldown=true;
+        sLife();flashLost();
+        ST.lives=Math.max(0,ST.lives-1);
+        updateGameHUD();
+        // Teleport player to safe center
+        G.surv.px=50;G.surv.py=42;
+        const p=document.getElementById('surv-player');if(p){p.style.left='50%';p.style.top='42%';}
+        if(ST.lives<=0){
+          clearInterval(G.surv.ghostInt);clearInterval(G.surv.survInt);
+          stopTimer();document.removeEventListener('keydown',G.surv.keyH);
+          setTimeout(()=>showGameOver(w),600);
+        }else{
+          // Brief invincibility then resume — ghosts keep moving!
+          setTimeout(()=>{G.surv.cooldown=false;},2000);
+        }
+      }
+    });
+  },ghostMs);
+
+  // Survival counter
+  G.surv.survInt=setInterval(()=>{
+    if(!G.timerRunning)return;
+    G.surv.survived++;ST.score+=3;updateGameHUD();setFB(G.surv.survived,G.surv.goal,w.col);
+    if(G.surv.survived>=G.surv.goal){
+      clearInterval(G.surv.survInt);clearInterval(G.surv.ghostInt);
+      stopTimer();setTimeout(()=>worldLevelWin(w),600);
+    }
+  },1000);
+
+  G.surv.keyH=(e)=>{
+    const m={'ArrowUp':[0,-8],'ArrowDown':[0,8],'ArrowLeft':[-8,0],'ArrowRight':[8,0],'w':[0,-8],'s':[0,8],'a':[-8,0],'d':[8,0]};
+    if(m[e.key]){e.preventDefault();moveSurv(...m[e.key]);}
+  };
+  document.addEventListener('keydown',G.surv.keyH);
+  startTimer(surviveFor,()=>{
+    clearInterval(G.surv.ghostInt);clearInterval(G.surv.survInt);
+    document.removeEventListener('keydown',G.surv.keyH);
+    timesUp(w);
+  });
+}
+
+
+function moveSurv(dx,dy){
+  if(!G.surv||!G.timerRunning)return;
+  G.surv.px=Math.max(0,Math.min(90,G.surv.px+dx));
+  G.surv.py=Math.max(0,Math.min(87,G.surv.py+dy));
+  const p=document.getElementById('surv-player');if(p){p.style.left=G.surv.px+'%';p.style.top=G.surv.py+'%';}
+}
+
+/* ═══════════════════════════════════════════
+   WORLD 7 — QUANTUM DOORS
+═══════════════════════════════════════════ */
+const DOOR_THEMES=[
+  {correct:'🔮',wrong:['🕳️','🔥'],colors:['#64c8ff','#ff4757','#ff9300']},
+  {correct:'⚛️',wrong:['💀','🌑'],colors:['#00fff2','#c0392b','#333']},
+  {correct:'💎',wrong:['🌀','⚡'],colors:['#f5c518','#7b2fff','#ff6eb4']},
+  {correct:'🌟',wrong:['🕸️','🧿'],colors:['#ffd700','#666','#8800aa']},
+];
+function startDoors(w,lv){
+  const numDoors=Math.min(2+~~(lv/2),5);
+  const goal=3+~~(lv/3);
+  document.getElementById('ldesc').textContent=`Choose the correct quantum door! Complete ${goal} rounds.`;
+  document.getElementById('fbl-left').textContent='🚪 Cleared';
+  G.doors={cleared:0,goal,round:0};
+  setFB(0,goal,w.col);
+  spawnDoors(w,numDoors);
+  startTimer(45+lv*5,()=>timesUp(w));
+}
+
+function spawnDoors(w,n){
+  const ga=document.getElementById('game-area');ga.innerHTML='';
+  const wrap=document.createElement('div');wrap.className='doors-wrap';
+  const th=DOOR_THEMES[G.doors.round%DOOR_THEMES.length];
+  const correctIdx=~~(Math.random()*n);
+  const hint=document.createElement('div');hint.className='door-hint-text';hint.textContent=`⚛️ One door holds the |1⟩ eigenstate — choose wisely`;
+  const qstate=document.createElement('div');qstate.className='door-quantum-state';qstate.textContent=`Superposition: ${n} states → 1 real`;
+  for(let i=0;i<n;i++){
+    const isCorrect=i===correctIdx;
+    const d=document.createElement('div');d.className='door';
+    const col=th.colors[i%th.colors.length];
+    d.innerHTML=`<div class="door-body" style="background:rgba(0,0,0,.4);border-color:${col}40;">
+      <div class="door-icon">${isCorrect?th.correct:th.wrong[i%th.wrong.length]}</div>
+      <div class="door-label" style="color:${col}">Door ${i+1}</div>
+      <div class="door-knob" style="background:${col};top:50%"></div>
+    </div>`;
+    d.onclick=()=>clickDoor(d,isCorrect,w,n);
+    wrap.appendChild(d);
+  }
+  ga.appendChild(wrap);ga.appendChild(hint);ga.appendChild(qstate);
+}
+
+function clickDoor(door,isCorrect,w,n){
+  if(!G.timerRunning)return;sDoor();
+  document.querySelectorAll('.door').forEach(d=>d.onclick=null);
+  if(isCorrect){
+    door.classList.add('correct');sSuccess();confetti(25);
+    G.doors.cleared++;G.doors.round++;ST.score+=70;updateGameHUD();setFB(G.doors.cleared,G.doors.goal,w.col);
+    if(G.doors.cleared>=G.doors.goal){stopTimer();setTimeout(()=>worldLevelWin(w),800);}
+    else setTimeout(()=>spawnDoors(w,n),900);
+  }else{
+    door.classList.add('wrong-door');sWrong();
+    setTimeout(()=>loseLife(w),400);
+    if(ST.lives>1)setTimeout(()=>spawnDoors(w,n),900);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   WORLD 8 — QUANTUM LAB (tough version)
+═══════════════════════════════════════════ */
+function startLab(w,lv){
+  const numVars=Math.min(2+lv,6); // up to 6 variables
+  const maxVal=lv<=2?3:lv<=4?5:lv<=6?7:9; // value range grows
+  const varNames=['α','β','γ','δ','ε','ζ'];
+  // Harder: use multiply/mix operations at higher levels
+  const useMultiOp=lv>=5;
+  // Generate a solvable target
+  const solution=Array(numVars).fill(0).map(()=>~~(Math.random()*maxVal)+1);
+  const target=useMultiOp
+    ? solution[0]*solution[1]+(solution[2]||0)+(solution[3]||0) // harder formula
+    : solution.reduce((a,b)=>a+b,0);
+  const goal=Math.min(2+~~(lv/2),6);
+  const timer=Math.max(20,60-lv*4); // gets faster! L1=56s, L10=20s
+  const opStr=useMultiOp?`${varNames[0]}×${varNames[1]} + rest`:varNames.slice(0,numVars).join(' + ');
+  document.getElementById('ldesc').textContent=`Level ${lv} · Set vars 1-${maxVal}: ${opStr} = ${target} · Solve ${goal}×`;
+  document.getElementById('fbl-left').textContent='🧪 Solved';
+  G.lab={vars:Array(numVars).fill(0),target,numVars,goal,solved:0,round:0,maxVal,useMultiOp,varNames:varNames.slice(0,numVars)};
+  setFB(0,goal,w.col);
+  buildLabUI(w,varNames.slice(0,numVars),target,maxVal,opStr);
+  startTimer(timer,()=>timesUp(w));
+}
+
+function buildLabUI(w,vNames,target,maxVal,opStr){
+  const ga=document.getElementById('game-area');ga.innerHTML='';
+  const wrap=document.createElement('div');wrap.className='lab-wrap';
+  const eq=document.createElement('div');eq.className='lab-equation';
+  eq.innerHTML=`<span style="color:rgba(200,100,255,.5)">${opStr}</span> = <span style="color:#c864ff;font-size:1.3em">${target}</span>`;
+  // Qubit visualizer
+  const qv=document.createElement('div');qv.className='lab-qubit-viz';
+  for(let i=0;i<G.lab.numVars;i++){const q=document.createElement('div');q.className='lab-qubit';q.id=`qb-${i}`;q.textContent='0';qv.appendChild(q);}
+  const vars=document.createElement('div');vars.className='lab-vars';
+  for(let i=0;i<G.lab.numVars;i++){
+    const vw=document.createElement('div');vw.className='lab-var';
+    const vn=document.createElement('div');vn.className='lab-var-name';vn.textContent=vNames[i];
+    const vb=document.createElement('div');vb.className='lab-var-btns';
+    // Show range 1 to maxVal
+    for(let val=1;val<=maxVal;val++){
+      const btn=document.createElement('button');btn.className='lab-vbtn';btn.textContent=val;
+      btn.onclick=(()=>{
+        const v=val,idx=i;
+        return ()=>{
+          G.lab.vars[idx]=v;
+          vw.querySelectorAll('.lab-vbtn').forEach(b=>b.classList.remove('selected'));
+          btn.classList.add('selected');
+          const qb=document.getElementById(`qb-${idx}`);
+          if(qb){qb.textContent=v;qb.classList.add('active');}
+          sClick();
+          // Show current sum/formula
+          const cur=G.lab.useMultiOp
+            ?(G.lab.vars[0]||0)*(G.lab.vars[1]||0)+G.lab.vars.slice(2).reduce((a,b)=>a+b,0)
+            :G.lab.vars.reduce((a,b)=>a+b,0);
+          const res=document.getElementById('lab-result');
+          if(res){res.style.display='block';res.className='lab-result';res.style.background='rgba(200,100,255,.08)';res.style.border='1px solid rgba(200,100,255,.2)';res.style.color='rgba(200,100,255,.7)';res.textContent=`Current = ${cur} ${cur===target?'✓ Try measuring!':'(need '+target+')'}`;}
+        };
+      })();
+      vb.appendChild(btn);
+    }
+    vw.appendChild(vn);vw.appendChild(vb);vars.appendChild(vw);
+  }
+  const res=document.createElement('div');res.className='lab-result';res.id='lab-result';
+  const checkBtn=document.createElement('button');checkBtn.className='lab-check-btn';checkBtn.textContent='⚛️ Measure Eigenstate';
+  checkBtn.onclick=()=>checkLab(w,vNames,target);
+  wrap.appendChild(eq);wrap.appendChild(qv);wrap.appendChild(vars);wrap.appendChild(checkBtn);wrap.appendChild(res);
+  ga.appendChild(wrap);
+}
+
+function checkLab(w,varNames,target){
+  if(!G.timerRunning)return;
+  const sum=G.lab.useMultiOp
+    ?(G.lab.vars[0]||0)*(G.lab.vars[1]||0)+G.lab.vars.slice(2).reduce((a,b)=>a+b,0)
+    :G.lab.vars.reduce((a,b)=>a+b,0);
+  const res=document.getElementById('lab-result');res.style.display='block';
+  if(sum===target){
+    sSuccess();res.className='lab-result ok';res.textContent=`✓ Eigenstate confirmed! = ${sum}`;
+    G.lab.solved++;G.lab.round++;ST.score+=90;updateGameHUD();confetti(20);setFB(G.lab.solved,G.lab.goal,w.col);
+    if(G.lab.solved>=G.lab.goal){stopTimer();setTimeout(()=>worldLevelWin(w),700);}
+    else{
+      // New target, same difficulty
+      const maxVal=G.lab.maxVal;
+      const solution=Array(G.lab.numVars).fill(0).map(()=>~~(Math.random()*maxVal)+1);
+      const nt=G.lab.useMultiOp?solution[0]*solution[1]+(solution[2]||0)+(solution[3]||0):solution.reduce((a,b)=>a+b,0);
+      G.lab.target=nt;G.lab.vars=Array(G.lab.numVars).fill(0);
+      const opStr=G.lab.useMultiOp?`${G.lab.varNames[0]}×${G.lab.varNames[1]} + rest`:G.lab.varNames.join(' + ');
+      setTimeout(()=>buildLabUI(w,G.lab.varNames,nt,maxVal,opStr),800);
+    }
+  }else{
+    sWrong();res.className='lab-result err';res.textContent=`✗ Got ${sum}, need ${target}. Try again!`;loseLife(w);
+    setTimeout(()=>{if(res)res.style.display='none';},1600);
+  }
+}
+
+/* ══ SHARED GAME HELPERS ══ */
+function setFB(v,max,col){
+  const pct=max>0?Math.min(v/max*100,100):0;
+  document.getElementById('fbf').style.width=pct+'%';
+  document.getElementById('fbf').style.background=col||'var(--qb)';
+  document.getElementById('fbl').textContent=`${v}/${max}`;
+}
+
+/* ══ TIMER ══ */
+function startTimer(dur,onEnd){
+  stopTimer();G.timerTotal=dur;G.timeLeft=dur;G.timerRunning=true;updTimer();
+  G.onTimerEnd=onEnd;
+  timerInt=setInterval(()=>{if(!G.timerRunning)return;G.timeLeft--;updTimer();
+    if(G.timeLeft<=10&&G.timeLeft>0)sTimerWarn();
+    if(G.timeLeft<=0){stopTimer();if(G.onTimerEnd)G.onTimerEnd();}
+  },1000);
+}
+function stopTimer(){clearInterval(timerInt);timerInt=null;G.timerRunning=false;}
+function updTimer(){
+  const t=G.timeLeft||0,tot=G.timerTotal||60;
+  const el=document.getElementById('td'),fill=document.getElementById('tf');if(!el)return;
+  el.textContent=t;fill.style.width=Math.max(0,t/tot*100)+'%';
+  if(t>tot*0.33){el.className='timerd t-ok';fill.style.background='#39ff14';}
+  else if(t>tot*0.16){el.className='timerd t-warn';fill.style.background='#ffc107';}
+  else{el.className='timerd t-crit';fill.style.background='#ff4757';}
+}
+
+/* ══ HINT ══ */
+function showCurrentLevelSelect(){
+  sClick();
+  if(G.lv){clearInterval(trFpInt);clearInterval(fpi);stopBg();openTreasureSelect();return;}
+  if(G.world){cleanupWorld();showLevelSelect(G.world);}
+  else{cleanupWorld();backToHub();}
+}
+
+function useHint(){
+  if(G.lv){useTreasureHint();return;} // treasure mode
+  if(ST.hints<=0){toast('<strong>No hints left!</strong> Trust your instinct.');return;}
+  sHint();ST.hints--;updateGameHUD();
+  toast(`<strong>💡 Hint:</strong> ${G.world?.hint||'Look carefully at the quantum states!'}`);
+}
+
+/* ══ QUIZ (beside hint btn) ══ */
+function openQuiz(){
+  if(!G.timerRunning){toast('Start a level first!');return;}
+  if(G.quizUsed){toast('<strong>Quiz already used</strong> this level!');return;}
+  G.quizUsed=true;stopTimer();
+  const q=QS[~~(Math.random()*QS.length)];
+  const opts=q.opts.map((o,i)=>`<button class="qopt" onclick="answerQ(${i},${q.a},this)">${o}</button>`).join('');
+  showModal('❓','<span style="color:#ffd700">Quick Question!</span>','Answer correctly → earn a <strong>+1 Bonus Life!</strong> ❤️','mb2-q',[]);
+  document.getElementById('mbtns').innerHTML=`<div style="width:100%"><div class="quiz-q">${q.q}</div><div class="quiz-opts">${opts}</div></div>`;
+}
+
+function answerQ(chosen,correct,btn){
+  document.querySelectorAll('.qopt').forEach(o=>o.onclick=null);
+  if(chosen===correct){
+    btn.classList.add('correct');sMatch();
+    ST.lives=Math.min(3,ST.lives+1);flashGain();updateGameHUD();
+    setTimeout(()=>{closeMo();toast('<strong>✅ Correct! +1 Life!</strong>');if(G.world&&G.timerRunning===false)startTimer(G.timeLeft||30,G.onTimerEnd);},1200);
+  }else{
+    btn.classList.add('wrong-a');document.querySelectorAll('.qopt')[correct].classList.add('correct');sWrong();
+    setTimeout(()=>{closeMo();toast('<strong>❌ Wrong answer.</strong> Keep going!');if(G.world&&G.timerRunning===false)startTimer(G.timeLeft||30,G.onTimerEnd);},1400);
+  }
+  updateGameHUD();
+}
+
+/* ══ LIFE MANAGEMENT ══ */
+function loseLife(w){
+  ST.lives=Math.max(0,ST.lives-1);sLife();flashLost();updateGameHUD();
+  if(ST.lives<=0){stopTimer();cleanupWorld();setTimeout(()=>showGameOver(w),600);}
+}
+
+function cleanupWorld(){
+  stopBg();stopTimer();
+  if(G.maze?.keyHandler)document.removeEventListener('keydown',G.maze.keyHandler);
+  if(G.maze?.collapseInt)clearInterval(G.maze.collapseInt);
+  if(G.maze?.ghostInt)clearInterval(G.maze.ghostInt);
+  if(G.surv?.ghostInt)clearInterval(G.surv.ghostInt);
+  if(G.surv?.survInt)clearInterval(G.surv.survInt);
+  if(G.surv?.keyH)document.removeEventListener('keydown',G.surv.keyH);
+  clearInterval(fpInt);fpInt=null;
+  document.querySelectorAll('.dice-float,.ghost-float').forEach(e=>e.remove());
+}
+
+/* ══ WIN / LOSE ══ */
+function worldLevelWin(w){
+  sWin();confetti(80);
+  const bonus=(G.timeLeft||0)*2;ST.score+=bonus;
+  if(!ST.levelCleared)ST.levelCleared={};
+  if(!ST.levelCleared[w.id])ST.levelCleared[w.id]=[];
+  if(!ST.levelCleared[w.id].includes(G.level))ST.levelCleared[w.id].push(G.level);
+  if(!ST.cleared.includes(w.id))ST.cleared.push(w.id);
+  saveScore();
+  const nextLv=G.level+1;
+  const hasMore=nextLv<=w.levels;
+  const rm=G.realm||(WORLD_LVS[w.id]||[])[G.level-1]||null;
+  const nextRm=(WORLD_LVS[w.id]||[])[nextLv-1]||null;
+  const col=rm?rm.col:w.col;
+  const tcls=rm?rm.tcls:'';
+  document.querySelectorAll('.dice-float,.ghost-float').forEach(e=>e.remove());
+  showModal('🏆',`<span class="${tcls}">✨ ${rm?rm.realm:'Realm '+G.level} Clear!</span>`,
+    `<strong>${rm?rm.nm:w.name}</strong><br><br>⚡ Score: <strong>${ST.score}</strong> (+${bonus} speed bonus)<br>${hasMore?`<span style="color:${col}">→ ${nextRm?nextRm.nm:'Realm '+nextLv} unlocked!</span>`:'<span style="color:#39ff14">⭐ World Complete!</span>'}`,
+    'mb2-q',[
+      ...(hasMore?[{t:`${nextRm?nextRm.realm:'Realm '+nextLv} →`,c:'mp-q',fn:()=>{sClick();closeMo();ST.lives=3;launchWorldLevel(w,nextLv,nextRm);}}]:[]),
+      {t:'All Realms',c:'ms',fn:()=>{sClick();closeMo();cleanupWorld();showLevelSelect(w);}},
+      {t:'All Worlds',c:'ms',fn:()=>{sClick();closeMo();cleanupWorld();backToHub();}},
+      {t:'↺ Replay',c:'ms',fn:()=>{sClick();closeMo();ST.lives=3;launchWorldLevel(w,G.level,rm);}}
+    ]);
+}
+
+function showGameOver(w){
+  sGameOver();
+  document.querySelectorAll('.dice-float,.ghost-float').forEach(e=>e.remove());
+  const rm=G.realm||(WORLD_LVS[w.id]||[])[G.level-1]||null;
+  const lbl=rm?rm.nm:w.name;
+  const realmLbl=rm?rm.realm:'Level '+G.level;
+  showModal('💔','<span style="color:#e74c3c">💔 Game Over</span>',
+    `No lives left in <em>${lbl}</em> — ${realmLbl}<br>Score: <strong>${ST.score}</strong>`,
+    'mb2-over',[
+      {t:'↺ Retry',c:'mp-r',fn:()=>{sClick();closeMo();ST.lives=3;launchWorldLevel(w,G.level,rm);}},
+      {t:'All Realms',c:'ms',fn:()=>{sClick();closeMo();cleanupWorld();if(w.type!=='treasure')showLevelSelect(w);else openTreasureSelect();}},
+      {t:'All Worlds',c:'ms',fn:()=>{sClick();closeMo();cleanupWorld();backToHub();}}
+    ]);
+}
+
+function timesUp(w){
+  sGameOver();cleanupWorld();
+  showModal('⏱','<span style="color:#ff4757">Time\'s Up!</span>',
+    `Time expired in <em>${w.name}</em><br>Score: <strong>${ST.score}</strong>`,
+    'mb2-over',[
+      {t:'↺ Retry',c:'mp-r',fn:()=>{sClick();closeMo();ST.lives=3;ST.hints=1;startWorldLevel(w,G.level);}},
+      {t:'All Worlds',c:'ms',fn:()=>{sClick();closeMo();backToHub();}}
+    ]);
+}
+
+function backToHub(){
+  cleanupWorld();setCC('#00d4ff');
+  document.querySelectorAll('.dice-float,.ghost-float').forEach(e=>e.remove());
+  document.getElementById('sg').className='screen gscreen';
+  document.getElementById('game-area').innerHTML='';
+  buildHub();SS('s-hub');loadLeaderboard();
+}
+
+/* ══ MODAL ══ */
+function showModal(ico,tit,body,cls,btns){
+  document.getElementById('mico').textContent=ico;document.getElementById('mtit').innerHTML=tit;document.getElementById('mbdy').innerHTML=body;document.getElementById('mb2').className=`mb2 ${cls}`;
+  const b=document.getElementById('mbtns');b.innerHTML='';(btns||[]).forEach(bt=>{const el=document.createElement('button');el.className=`mbtn ${bt.c}`;el.textContent=bt.t;el.onclick=bt.fn;b.appendChild(el);});
+  document.getElementById('mo').classList.add('show');
+}
+function closeMo(){document.getElementById('mo').classList.remove('show');}
+
+/* ══ TOASTS / FX ══ */
+let tt;function toast(m){const el=document.getElementById('ht');el.innerHTML=m;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),3800);}
+function flashLost(){const f=document.createElement('div');f.className='life-flash';document.body.appendChild(f);setTimeout(()=>f.remove(),600);}
+function flashGain(){const f=document.createElement('div');f.className='life-gain';document.body.appendChild(f);setTimeout(()=>f.remove(),700);}
+
+function confetti(n=30){const cs=['#00d4ff','#7b2fff','#f5c518','#ff6eb4','#39ff14','#ff4757'];for(let i=0;i<n;i++){const c=document.createElement('div');c.className='cp';const sz=Math.random()*7+3;c.style.cssText=`width:${sz}px;height:${sz}px;background:${cs[~~(Math.random()*cs.length)]};left:${Math.random()*100}vw;top:-8px;animation-duration:${Math.random()*2+1.4}s;animation-delay:${Math.random()*.6}s;`;document.body.appendChild(c);setTimeout(()=>c.remove(),3600);}}
+</script>
+</body>
+</html>
