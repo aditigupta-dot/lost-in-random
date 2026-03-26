@@ -1,0 +1,2 @@
+# lost-in-random
+🎮 Lost in Random is a quantum-themed browser game featuring 8 unique worlds — Treasure Hunt, Quantum Maze, Target Shooting, Memory Game, Dice Strategy, Ghost Survival, Doors Puzzle, and Lab Puzzle — plus 8 randomly generated new game types (Sequence, Word Shift, Gravity, Cipher, Reflex, Swap, Sniper, Echo). Each world has themed realms with unique names instead of plain level numbers. Built with vanilla HTML/CSS/JS frontend and a Node.js + Express + MongoDB backend with JWT authentication, leaderboards, and full game progress persistence.
